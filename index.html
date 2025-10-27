@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Contigo Mamá 360° — Mockup Claro</title>
+<style>
+  :root{
+    --bg:#fff7fb; --card:#fff; --line:#f6d6e1; --text:#374151; --muted:#6b7280;
+    --brand:#f472b6; --brand-2:#fb7185; --brand-3:#f59e0b; --accent:#9d174d;
+    --chip:#fff0f6; --shadow:0 10px 30px rgba(31,41,55,.08); --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; color:var(--text); font-family:ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    background:
+      radial-gradient(1000px 600px at 100% -10%, rgba(244,114,182,.15), transparent 60%),
+      radial-gradient(900px 600px at -10% 0%, rgba(251,113,133,.12), transparent 60%),
+      linear-gradient(180deg, var(--bg), #fff);
+  }
+  a{color:#ec4899}
+  .app{max-width:480px; margin:0 auto; min-height:100dvh; padding:16px 16px 88px; display:flex; flex-direction:column; gap:14px; position:relative}
+  header{display:flex; align-items:center; gap:12px; padding:8px 4px 0}
+  .logo{width:44px; height:44px; border-radius:14px; background:radial-gradient(circle at 30% 20%, #ffe4e6, #f472b6 55%, #9d174d); box-shadow:var(--shadow)}
+  .hgroup{display:flex; flex-direction:column}
+  .title{font-weight:900; letter-spacing:.2px}
+  .subtitle{font-size:12px; color:var(--muted)}
+  .screen{display:none; animation:fade .25s ease} .screen.active{display:block}
+  @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)}}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px}
+  .stack{display:flex; flex-direction:column; gap:12px}
+  .row{display:flex; gap:10px; align-items:center}
+  .grid{display:grid; gap:12px} .grid.cols2{grid-template-columns:1fr 1fr} .grid.cols3{grid-template-columns:1fr 1fr 1fr}
+  .pill{background:var(--chip); border:1px solid var(--line); padding:8px 12px; border-radius:999px; font-size:13px}
+  .badge{font-size:11px; padding:4px 8px; border-radius:999px; background:#fff; border:1px solid var(--line); color:var(--accent)}
+  .muted{color:var(--muted)}
+  .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 14px; border-radius:14px; border:1px solid var(--line); background:#fff; color:var(--text); cursor:pointer; font-weight:700}
+  .btn.brand{background:linear-gradient(180deg, var(--brand), var(--brand-2)); color:#fff; border:none}
+  .btn.ghost{background:transparent}
+  .field{display:flex; flex-direction:column; gap:6px}
+  label{font-size:13px; color:#475569}
+  input, select, textarea{width:100%; padding:12px 12px; border-radius:12px; border:1px solid #e5e7eb; background:#fff; color:var(--text); outline:none}
+  .chips{display:flex; flex-wrap:wrap; gap:8px}
+  .chip{padding:8px 12px; border-radius:999px; border:1px solid var(--line); background:#fff; font-size:12px; cursor:pointer}
+  .chip.active{outline:2px solid var(--brand); color:#9d174d; background:#fff0f6}
+  .stat{border:1px solid var(--line); border-radius:14px; background:#fff; padding:12px}
+  .bar{height:8px; background:#f3f4f6; border:1px solid var(--line); border-radius:999px; overflow:hidden} .bar i{display:block; height:100%; background:linear-gradient(90deg,var(--brand),var(--brand-2),var(--brand-3))}
+  .empty{color:#9ca3af; font-size:14px}
+  .avatar{width:64px;height:64px;border-radius:16px;border:1px solid var(--line);background:radial-gradient(circle at 30% 20%, #fed7e2, #f472b6 60%, #9d174d)}
+  .edit{cursor:pointer}
+
+  /* Tabbar */
+  .tabbar{position:fixed; left:0; right:0; bottom:0; z-index:10; margin:auto; max-width:480px; padding:10px 12px; display:none; grid-template-columns:repeat(5,1fr); gap:8px; background:#ffffffcc; backdrop-filter:blur(8px); border-top:1px solid var(--line)}
+  .tabbar button{display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 6px; border-radius:12px; border:1px solid transparent; background:transparent; color:#475569; cursor:pointer; font-size:12px}
+  .tabbar button .ico{font-size:18px}
+  .tabbar button.active{color:#9d174d; border-color:#fce7f3; background:#fff0f6}
+
+  /* Chat */
+  .chat{display:flex; flex-direction:column; gap:10px; height:360px; overflow:auto; padding:10px; background:#fff; border:1px solid var(--line); border-radius:16px}
+  .bubble{max-width:78%; padding:10px 12px; border-radius:14px; border:1px solid var(--line); background:#fff}
+  .me{align-self:flex-end; background:#fff0f6}
+  .bot{align-self:flex-start; background:#f8fafc}
+  .composer{display:flex; gap:8px; margin-top:8px} .composer input{flex:1}
+
+  /* Calendario inline */
+  .cal-wrap{border:1px solid var(--line); border-radius:16px; padding:12px}
+  .cal-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
+  .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px}
+  .day{background:#fff; border:1px solid var(--line); border-radius:10px; padding:8px; min-height:62px; position:relative}
+  .dot{width:6px; height:6px; border-radius:50%; background:#ec4899; position:absolute; right:6px; bottom:6px}
+
+  /* Toggle de pestañas del acceso */
+  .tabbtn{ transition:.15s ease; }
+  .tabbtn.active{ background:linear-gradient(180deg, var(--brand), var(--brand-2)); color:#fff; border:none }
+  .tabbtn:not(.active){ background:#fff; color:var(--text); border:1px solid var(--line) }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="logo" aria-hidden="true"></div>
+      <div class="hgroup">
+        <div class="title">Contigo Mamá 360°</div>
+        <div class="subtitle">MVP Mockup • Yo mamá + Nawi Wawa + Tribu</div>
+      </div>
+    </header>
+
+    <!-- Tabbar -->
+    <div class="tabbar" id="tabbar">
+      <button data-view="yo" class="active"><span class="ico">💖</span><span>Yo mamá</span></button>
+      <button data-view="faq"><span class="ico">💬</span><span>Chat</span></button>
+      <button data-view="nawi"><span class="ico">👩‍🍼</span><span>Nawi Wawa</span></button>
+      <button data-view="perfil"><span class="ico">👤</span><span>Perfil</span></button>
+      <button data-view="tribu"><span class="ico">📅</span><span>Tribu</span></button>
+    </div>
+
+    <!-- ACCESO -->
+    <section class="screen active" id="acceso">
+      <div class="card stack">
+        <div class="grid cols2">
+          <button class="btn tabbtn active" data-tab="loginTab">Ya tengo cuenta</button>
+          <button class="btn tabbtn" data-tab="signupTab">Crear mi cuenta</button>
+        </div>
+
+        <!-- Login -->
+        <div id="loginTab" class="stack">
+          <div class="field"><label>Email o teléfono</label><input id="loginUser" placeholder="tú@correo.com / 999 888 777"/></div>
+          <div class="field"><label>Contraseña (demo)</label><input id="loginPass" type="password" placeholder="••••••"/></div>
+          <button class="btn brand" onclick="login()">Ingresar</button>
+        </div>
+
+        <!-- Registro -->
+        <div id="signupTab" class="stack" style="display:none">
+          <div class="field"><label>Nombre</label><input id="r_nombre" placeholder="Tu nombre"/></div>
+          <div class="field"><label>Email o teléfono</label><input id="r_contacto" placeholder="tú@correo.com / 999 888 777"/></div>
+          <div class="field"><label>Contraseña (demo)</label><input id="r_pass" type="password" placeholder="Mínimo 6 caracteres"/></div>
+
+          <div class="grid cols2">
+            <div class="field"><label>Edad del bebé (meses)</label><input id="r_edad" type="number" min="0" max="24" value="2"/></div>
+            <div class="field">
+              <label>¿Primer hijo/a?</label>
+              <div class="chips"><span class="chip" data-group="primer">Sí</span><span class="chip" data-group="primer">No</span></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Nivel de apoyo disponible</label>
+            <div class="chips"><span class="chip" data-group="apoyoNivel">Bajo</span><span class="chip" data-group="apoyoNivel">Medio</span><span class="chip" data-group="apoyoNivel">Alto</span></div>
+          </div>
+          <div class="field">
+            <label>¿Quiénes te apoyan?</label>
+            <div class="chips" id="chipsApoyos">
+              <span class="chip" data-group="apoyos">Pareja</span>
+              <span class="chip" data-group="apoyos">Hermanos</span>
+              <span class="chip" data-group="apoyos">Padres</span>
+              <span class="chip" data-group="apoyos">Amigas</span>
+              <span class="chip" data-group="apoyos">Familia</span>
+              <span class="chip" data-group="apoyos">Vecinos</span>
+              <span class="chip" data-group="apoyos">Otro</span>
+            </div>
+            <input id="apoyoOtro" placeholder="Si elegiste 'Otro', ¿quién?" style="display:none"/>
+          </div>
+
+          <div class="field"><label>Hijos/as (nombres, separados por coma)</label><input id="r_hijos" placeholder="Ej: Lucas, Renata"/></div>
+          <div class="row"><input id="r_whatsapp" type="checkbox" style="width:auto"/><label for="r_whatsapp">Quiero recibir apoyo por WhatsApp</label></div>
+          <button class="btn brand" onclick="registrar()">Crear cuenta y entrar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- YO MAMÁ -->
+    <section class="screen" id="yo">
+      <div class="card stack">
+        <div class="row" style="justify-content:space-between">
+          <h3 style="margin:0">Yo mamá</h3>
+          <span class="badge" id="segmento">—</span>
+        </div>
+        <div class="grid cols2">
+          <select id="logTipo">
+            <option>Ánimo</option><option>Lactancia</option><option>Sueño</option><option>Rutina</option><option>Salud</option><option>Otro</option>
+          </select>
+          <input id="logAnimo" type="number" min="1" max="5" placeholder="Ánimo 1–5"/>
+        </div>
+        <textarea id="logNota" rows="3" placeholder="Escribe una nota breve…"></textarea>
+        <div class="grid cols2">
+          <input id="logFecha" type="date"/>
+          <button class="btn brand" onclick="agregarLog()">Guardar</button>
+        </div>
+      </div>
+
+      <div class="cal-wrap">
+        <div class="cal-head">
+          <button class="btn" onclick="cambiarMes(-1)">←</button>
+          <div class="pill" id="calTitulo">—</div>
+          <button class="btn" onclick="cambiarMes(1)">→</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="stack" id="calDetalle"></div>
+      </div>
+
+      <div class="card stack">
+        <h4 style="margin:0">Te aconsejamos</h4>
+        <div class="stack">
+          <div class="pill">💗 “Lo haces increíble. Pide ayuda; criar también es hacer equipo.”</div>
+          <div class="pill">🕯️ 3 respiraciones profundas antes de dormir pueden mejorar tu descanso.</div>
+          <div class="pill">🎧 Charla: “Sueño del RN en 20 min” — Jue 7pm, virtual. <button class="btn" onclick="alert('Inscrita (demo)')">Inscribirme</button></div>
+        </div>
+      </div>
+
+      <div class="grid cols3">
+        <div class="stat"><div class="muted" style="font-size:12px">Registros hoy</div><div id="statHoy" style="font-weight:800;font-size:20px">0</div><div class="bar"><i id="barHoy" style="width:0%"></i></div></div>
+        <div class="stat"><div class="muted" style="font-size:12px">Semana</div><div id="statSemana" style="font-weight:800;font-size:20px">0</div><div class="bar"><i id="barSem" style="width:0%"></i></div></div>
+        <div class="stat"><div class="muted" style="font-size:12px">Ánimo prom.</div><div id="statAnimo" style="font-weight:800;font-size:20px">—</div><div class="bar"><i id="barAni" style="width:0%"></i></div></div>
+      </div>
+    </section>
+
+    <!-- CHAT -->
+    <section class="screen" id="faq">
+      <div class="card stack">
+        <h3 style="margin:0 0 6px">Chat con el bot 🤖</h3>
+        <div class="chips">
+          <span class="chip" onclick="quickAsk('lactancia')">Lactancia</span>
+          <span class="chip" onclick="quickAsk('sueño')">Sueño</span>
+          <span class="chip" onclick="quickAsk('rutina')">Rutinas</span>
+        </div>
+        <div class="chat" id="chat"><div class="bubble bot">Hola, soy tu bot. Pregúntame sobre lactancia, sueño o rutinas.</div></div>
+        <div class="composer"><input id="inp" placeholder="Escribe tu pregunta..."/><button class="btn brand" onclick="send()">Enviar</button></div>
+      </div>
+    </section>
+
+    <!-- NAWI WAWA -->
+    <section class="screen" id="nawi">
+      <div class="card stack">
+        <h3 style="margin:0">Nawi Wawa — Buscar niñeras 👩‍🍼✨</h3>
+        <div class="muted" style="font-size:13px">Explora perfiles verificados y conecta por WhatsApp.</div>
+        <div class="row">
+          <input id="f_zona" placeholder="Zona (ej. Lima Este)"/>
+          <select id="f_exp"><option value="">Experiencia</option><option>RN/0–3m</option><option>3–6m</option><option>Gemelos</option></select>
+          <button class="btn brand" onclick="filtrar()">Buscar</button>
+        </div>
+        <div class="list" id="nannies"></div>
+      </div>
+    </section>
+
+    <!-- PERFIL (mamá usuaria) -->
+    <section class="screen" id="perfil">
+      <div class="card stack">
+        <div class="row" style="gap:12px">
+          <div class="avatar" aria-hidden="true"></div>
+          <div style="flex:1">
+            <h3 id="p_nombre" style="margin:0">Mamá</h3>
+            <div class="muted" id="p_contacto" style="font-size:12px">—</div>
+          </div>
+          <span class="edit" title="Editar nombre" onclick="editarCampo()">✏️</span>
+        </div>
+        <div class="grid cols2">
+          <div class="pill">👶 Edad bebé: <b id="p_edad">—</b></div>
+          <div class="pill">🍼 Primer hijo/a: <b id="p_primer">—</b></div>
+          <div class="pill">🤝 Nivel de apoyo: <b id="p_apoyo">—</b></div>
+          <div class="pill">👨‍👩‍👧 Quiénes te apoyan: <b id="p_apoyos">—</b></div>
+        </div>
+      </div>
+
+      <div class="card stack">
+        <div class="row" style="justify-content:space-between"><h4 style="margin:0">Hijos/as</h4><span class="edit" onclick="editarHijos()">✏️</span></div>
+        <div id="listaHijos" class="chips"></div>
+        <div class="empty" id="emptyHijos">Aún no registraste hijos. Puedes agregar desde ✏️.</div>
+        <button class="btn" onclick="logout()">Cerrar sesión</button>
+      </div>
+    </section>
+
+    <!-- TRIBU (Agenda) -->
+    <section class="screen" id="tribu">
+      <div class="card stack">
+        <h3 style="margin:0">Tribu — Agenda de charlas y talleres 📅</h3>
+        <div id="agenda" class="stack"></div>
+      </div>
+    </section>
+
+    <!-- TOAST -->
+    <div id="toast" style="
+      position:fixed;left:50%;top:16px;transform:translateX(-50%) translateY(-20px);
+      background:#fff;color:#9d174d;border:1px solid var(--line);border-radius:12px;
+      box-shadow:0 10px 30px rgba(31,41,55,.08);padding:12px 14px;z-index:9999;opacity:0;pointer-events:none;
+      display:flex;gap:8px;align-items:center;font-weight:700;">
+      <span>🌷 ¡Lo estás haciendo bien, mamá! Registro guardado.</span>
+    </div>
+
+  </div>
+
+<script>
+  /* ========= Helpers UI ========= */
+  const tabbar = document.getElementById('tabbar');
+  const screens = [...document.querySelectorAll('.screen')];
+  function goto(view){ screens.forEach(s=>s.classList.toggle('active', s.id===view)); if(view!=='acceso'){ tabbar.style.display='grid'; } [...tabbar.children].forEach(b=>b.classList.toggle('active', b.dataset.view===view)); window.scrollTo({top:0,behavior:'smooth'}); }
+  tabbar.addEventListener('click',(e)=>{ const btn=e.target.closest('button'); if(!btn) return; goto(btn.dataset.view); });
+
+  // Tabs acceso base
+  function showTab(id){ const login=document.getElementById('loginTab'); const signup=document.getElementById('signupTab'); if(login) login.style.display=(id==='loginTab')?'block':'none'; if(signup) signup.style.display=(id==='signupTab')?'block':'none'; }
+
+  // --- Toggle de pestañas Acceso (rosa/blanco) ---
+  const tabButtons = Array.from(document.querySelectorAll('.tabbtn'));
+  function setAccessTab(tabId){
+    showTab(tabId);
+    tabButtons.forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+  }
+  tabButtons.forEach(b => b.addEventListener('click', () => setAccessTab(b.dataset.tab)));
+  // estado inicial
+  setAccessTab(tabButtons.find(b=>b.classList.contains('active'))?.dataset.tab || 'loginTab');
+
+  function toggleChip(el){ const group=el.getAttribute('data-group'); if(group==='apoyos'){ el.classList.toggle('active'); document.getElementById('apoyoOtro').style.display = (document.querySelector('.chip[data-group="apoyos"].active')?.textContent==='Otro') ? 'block' : 'none'; return; } document.querySelectorAll('.chip[data-group="'+group+'"]').forEach(c=>c.classList.remove('active')); el.classList.add('active'); }
+  document.querySelectorAll('.chip[data-group]').forEach(c=>c.addEventListener('click',()=>toggleChip(c)));
+
+  /* ========= Estado ========= */
+  const state = {
+    usuario:null,
+    perfil:null,
+    registros: JSON.parse(localStorage.getItem('cm360.logs')||'[]')
+  };
+
+  /* ========= Login / Registro ========= */
+  function login(){
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value.trim();
+    if(!u || !p){ showToast('💡 Completa usuario y contraseña.'); return; }
+    state.usuario = {nombre:'Mamá', contacto:u};
+    if(!state.perfil){ state.perfil = {edad:2, primer:'Sí', apoyoNivel:'Medio', apoyos:['Pareja'], whatsapp:true, hijos:[]}; }
+    refrescarPerfil(); initCalendarioToToday(); goto('yo'); renderTodo();
+  }
+  function registrar(){
+    const nombre = document.getElementById('r_nombre').value.trim();
+    const contacto = document.getElementById('r_contacto').value.trim();
+    const pass = document.getElementById('r_pass').value.trim();
+    const edad = parseInt(document.getElementById('r_edad').value||'0',10);
+    const primer = (document.querySelector('.chip[data-group="primer"].active')||{}).textContent || 'Sí';
+    const apoyoNivel = (document.querySelector('.chip[data-group="apoyoNivel"].active')||{}).textContent || 'Medio';
+    const apoyosSel = [...document.querySelectorAll('.chip[data-group="apoyos"].active')].map(x=>x.textContent);
+    const otro = document.getElementById('apoyoOtro').value.trim(); if(apoyosSel.includes('Otro') && otro) apoyosSel[apoyosSel.indexOf('Otro')] = otro;
+    const hijos = (document.getElementById('r_hijos').value||'').split(',').map(s=>s.trim()).filter(Boolean);
+    const whatsapp = document.getElementById('r_whatsapp').checked;
+    if(!nombre || !contacto || pass.length<6){ showToast('💡 Revisa nombre, contacto y contraseña (≥6).'); return; }
+    state.usuario = {nombre, contacto};
+    state.perfil = {edad, primer, apoyoNivel, apoyos:apoyosSel, whatsapp, hijos};
+    refrescarPerfil(); initCalendarioToToday(); goto('yo'); renderTodo();
+  }
+  function logout(){ localStorage.removeItem('cm360.logs'); state.usuario=null; state.perfil=null; state.registros=[]; tabbar.style.display='none'; goto('acceso'); }
+
+  /* ========= Perfil ========= */
+  function refrescarPerfil(){
+    document.getElementById('p_nombre').textContent = state.usuario?.nombre || 'Mamá';
+    document.getElementById('p_contacto').textContent = state.usuario?.contacto || '—';
+    document.getElementById('p_edad').textContent = (state.perfil?.edad ?? '—') + ' m';
+    document.getElementById('p_primer').textContent = state.perfil?.primer || '—';
+    document.getElementById('p_apoyo').textContent = (state.perfil?.apoyoNivel || '—');
+    document.getElementById('p_apoyos').textContent = (state.perfil?.apoyos || []).join(', ') || '—';
+    const hijosWrap = document.getElementById('listaHijos'); hijosWrap.innerHTML='';
+    (state.perfil?.hijos||[]).forEach(h=>{const s=document.createElement('span'); s.className='pill'; s.textContent='👶 '+h; hijosWrap.appendChild(s);});
+    document.getElementById('emptyHijos').style.display = (state.perfil?.hijos||[]).length? 'none':'block';
+    const edad = state.perfil?.edad ?? 0;
+    const etapa = edad<=3 ? '0–3m' : (edad<=6?'3–6m':'6m+');
+    const primerx = (/No/i.test(state.perfil?.primer||'')?'no primerx':'primerx');
+    const apoyo = (state.perfil?.apoyoNivel||'Medio').toLowerCase();
+    document.getElementById('segmento').textContent = `${etapa} | ${primerx} | apoyo ${apoyo}`;
+  }
+  function editarCampo(){ const nuevo = prompt('Nuevo nombre:', state.usuario?.nombre||''); if(nuevo){ state.usuario.nombre = nuevo; refrescarPerfil(); } }
+  function editarHijos(){ const actual = (state.perfil?.hijos||[]).join(', '); const txt = prompt('Hijos/as (separados por coma):', actual); if(txt!==null){ state.perfil.hijos = txt.split(',').map(s=>s.trim()).filter(Boolean); refrescarPerfil(); } }
+
+  /* ========= Yo mamá: Registros ========= */
+  const logFecha = document.getElementById('logFecha');
+  function todayStr(d=new Date()){ const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,'0'); const dd=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${dd}`; }
+
+  // --- Toast lindo ---
+  function showToast(msg='🌷 ¡Lo estás haciendo bien, mamá! Registro guardado.'){
+    const t = document.getElementById('toast');
+    t.firstElementChild.textContent = msg;
+    t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(-20px)'; t.style.transition = 'none'; void t.offsetWidth;
+    t.style.transition = 'opacity .18s ease, transform .18s ease';
+    t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
+    setTimeout(()=>{ t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(-20px)'; }, 1800);
+  }
+
+  function agregarLog(){
+    const tipo  = document.getElementById('logTipo').value;
+    const nota  = document.getElementById('logNota').value.trim();
+    const animo = parseInt(document.getElementById('logAnimo').value||'0',10) || null;
+    const date  = (logFecha.value || todayStr());
+
+    if(!nota && !animo){ showToast('💡 Escribe una nota o registra tu ánimo (1–5).'); return; }
+
+    state.registros.push({date, tipo, nota, animo});
+    localStorage.setItem('cm360.logs', JSON.stringify(state.registros));
+
+    // limpiar campos (mantener fecha)
+    document.getElementById('logTipo').selectedIndex = 0;
+    document.getElementById('logAnimo').value = '';
+    document.getElementById('logNota').value = '';
+
+    dibujarCalendario(); mostrarDia(new Date(date)); renderStats();
+    showToast('🌷 ¡Lo estás haciendo bien, mamá! Registro guardado.');
+  }
+
+  function regsByDateStr(ymd){ return state.registros.filter(r=>r.date===ymd); }
+  function weekStats(){
+    const d=new Date(); const day=(d.getDay()+6)%7; const start=new Date(d.getFullYear(),d.getMonth(),d.getDate()-day); const end=new Date(start); end.setDate(start.getDate()+7);
+    const list = state.registros.filter(r=>{const t=new Date(r.date); return t>=start && t<end;});
+    const hoy = state.registros.filter(r=>r.date===todayStr());
+    const animos = list.map(r=>r.animo).filter(Boolean);
+    return {hoy:hoy.length, semana:list.length, prom: animos.length? (animos.reduce((a,b)=>a+b,0)/animos.length): null};
+  }
+  function renderStats(){
+    const {hoy, semana, prom} = weekStats();
+    document.getElementById('statHoy').textContent=hoy;
+    document.getElementById('statSemana').textContent=semana;
+    document.getElementById('statAnimo').textContent = (prom==null?'—':prom.toFixed(1));
+    document.getElementById('barHoy').style.width = Math.min(hoy*20,100)+'%';
+    document.getElementById('barSem').style.width = Math.min(semana*12,100)+'%';
+    document.getElementById('barAni').style.width = (prom? prom*20:0)+'%';
+  }
+
+  /* ========= Calendario inline ========= */
+  let calMes, calAno;
+  function initCalendarioToToday(){ const t=new Date(); calMes=t.getMonth(); calAno=t.getFullYear(); logFecha.value=todayStr(t); dibujarCalendario(); mostrarDia(t); }
+  function cambiarMes(delta){ calMes += delta; if(calMes<0){calMes=11; calAno--;} if(calMes>11){calMes=0; calAno++;} dibujarCalendario(); document.getElementById('calDetalle').innerHTML=''; }
+  function dibujarCalendario(){
+    const grid=document.getElementById('calGrid'); const titulo=document.getElementById('calTitulo');
+    const first=new Date(calAno,calMes,1); const startDay=(first.getDay()+6)%7; const days=new Date(calAno,calMes+1,0).getDate();
+    titulo.textContent=new Date(calAno,calMes).toLocaleDateString('es-PE',{month:'long',year:'numeric'});
+    grid.innerHTML='';
+    ['L','M','M','J','V','S','D'].forEach(d=>{const h=document.createElement('div'); h.className='muted'; h.style.textAlign='center'; h.textContent=d; grid.appendChild(h);});
+    for(let i=0;i<startDay;i++){ const emp=document.createElement('div'); emp.className='day'; emp.style.visibility='hidden'; grid.appendChild(emp); }
+    for(let d=1; d<=days; d++){
+      const cell=document.createElement('div'); cell.className='day'; const fecha=new Date(calAno,calMes,d);
+      const ymd=todayStr(fecha);
+      cell.innerHTML=`<div style="font-weight:700">${d}</div>`;
+      if(regsByDateStr(ymd).length){ const dot=document.createElement('div'); dot.className='dot'; cell.appendChild(dot); }
+      cell.addEventListener('click',()=>{ logFecha.value=ymd; mostrarDia(fecha); });
+      grid.appendChild(cell);
+    }
+  }
+  function mostrarDia(fecha){
+    const ymd=todayStr(fecha);
+    const det=document.getElementById('calDetalle'); det.innerHTML=`<h4 style="margin:6px 0">Registros de ${fecha.toLocaleDateString()}</h4>`;
+    const list=regsByDateStr(ymd);
+    if(!list.length){ det.innerHTML += '<div class="empty">Sin registros este día.</div>'; return; }
+    list.forEach(r=>{ const el=document.createElement('div'); el.className='pill'; el.textContent=`${r.tipo}${r.animo?` (${r.animo}/5)`:''} — ${r.nota||''}`; det.appendChild(el); });
+  }
+
+  /* ========= Chat demo ========= */
+  const chat = document.getElementById('chat');
+  function addBubble(role, text){ const b=document.createElement('div'); b.className='bubble '+(role==='me'?'me':'bot'); b.textContent=text; chat.appendChild(b); chat.scrollTop=chat.scrollHeight; }
+  function respond(q){ const t=q.toLowerCase(); let ans="Puedo ayudarte con lactancia, sueño y rutinas. ¿Sobre qué quieres aprender?"; if(t.includes('lact')) ans="Lactancia: tomas cada 2–3h suelen funcionar en RN. Observa señales tempranas."; if(t.includes('sueñ')||t.includes('siest')) ans="Sueño: ventana de vigilia 45–60 min y ambiente oscuro + ruido blanco."; if(t.includes('rutina')) ans="Rutina: 2–3 anclas (baño, canción, arrullo) ayudan a anticipar."; addBubble('bot', ans); }
+  function send(){ const inp=document.getElementById('inp'); const q=inp.value.trim(); if(!q) return; addBubble('me', q); inp.value=''; setTimeout(()=>respond(q), 450); }
+  function quickAsk(topic){ const map={lactancia:'¿Cada cuánto debo dar de lactar?', sueño:'¿Cómo mejoro sus siestas?', rutina:'¿Qué rutina diaria es recomendable?'}; document.getElementById('inp').value=map[topic]||''; send(); }
+
+  /* ========= Nawi (buscar niñeras) ========= */
+  const data = [
+    {id:1, nombre:'María López', zona:'Lima Este', exp:'RN/0–3m', rating:4.8},
+    {id:2, nombre:'Rosa Pérez', zona:'Lima Norte', exp:'3–6m', rating:4.6},
+    {id:3, nombre:'Karla Díaz', zona:'Lima Sur', exp:'Gemelos', rating:4.7},
+    {id:4, nombre:'Elena Cruz', zona:'Lima Centro', exp:'RN/0–3m', rating:4.9},
+  ];
+  const list = document.getElementById('nannies');
+  function renderList(items){
+    list.innerHTML='';
+    items.forEach(n=>{
+      const li=document.createElement('div'); li.className='row'; li.style.gap='10px';
+      li.innerHTML = `
+        <div class="avatar" aria-hidden="true"></div>
+        <div class="card" style="flex:1">
+          <div class="row" style="justify-content:space-between">
+            <div><strong>${n.nombre}</strong> <span class="badge">${n.zona}</span> <span class="badge">${n.exp}</span></div>
+            <div class="pill">★ ${n.rating}</div>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn" onclick="alert('Ver perfil demo')">Ver</button>
+            <button class="btn brand" onclick="contactar()">WhatsApp</button>
+          </div>
+        </div>`;
+      list.appendChild(li);
+    });
+  }
+  function filtrar(){ const z=(document.getElementById('f_zona').value||'').toLowerCase(); const e=document.getElementById('f_exp').value; renderList(data.filter(n => (!z || n.zona.toLowerCase().includes(z)) && (!e || n.exp===e))); }
+  function contactar(){ alert('Abriría WhatsApp con el contacto de la nana (demo)'); }
+  renderList(data);
+
+  /* ========= Tribu (agenda) ========= */
+  const agenda = [
+    {id:1, titulo:'Charla: Sueño del RN', fecha:'2025-11-05', hora:'19:00', modo:'Virtual (Zoom)', tema:'Higiene del sueño 0–3m', expositora:'Lic. Ana Corrales'},
+    {id:2, titulo:'Taller: Lactancia sin dolor', fecha:'2025-11-08', hora:'10:00', modo:'Presencial (Miraflores)', tema:'Agarre y posturas', expositora:'Dra. María Paredes'},
+    {id:3, titulo:'Conversatorio: Retorno al trabajo', fecha:'2025-11-12', hora:'19:30', modo:'Virtual (Meet)', tema:'Red de apoyo y emociones', expositora:'Psic. Laura Ríos'},
+  ];
+  function renderAgenda(){
+    const wrap = document.getElementById('agenda'); wrap.innerHTML='';
+    agenda.forEach(a=>{
+      const card=document.createElement('div'); card.className='card';
+      card.innerHTML = `
+        <div class="row" style="justify-content:space-between">
+          <h4 style="margin:0">${a.titulo}</h4>
+          <span class="badge">${a.modo}</span>
+        </div>
+        <div class="row"><span class="pill">🗓 ${new Date(a.fecha).toLocaleDateString()}</span><span class="pill">⏰ ${a.hora}</span></div>
+        <div class="pill">🎯 ${a.tema}</div>
+        <div class="muted" style="font-size:13px">👩‍🏫 ${a.expositora}</div>
+        <div class="row" style="margin-top:8px"><button class="btn brand" onclick="alert('Inscrita en: ${a.titulo}')">Inscribirme</button></div>
+      `;
+      wrap.appendChild(card);
+    });
+  }
+  renderAgenda();
+
+  /* ========= Init ========= */
+  function renderTodo(){ refrescarPerfil(); renderStats(); dibujarCalendario(); }
+  document.getElementById('logFecha').value = todayStr();
+</script>
+</body>
+</html>
