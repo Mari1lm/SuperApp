@@ -26,12 +26,17 @@
   .hgroup{display:flex; flex-direction:column}
   .title{font-weight:900; letter-spacing:.2px}
   .subtitle{font-size:12px; color:var(--muted)}
-  .screen{display:none; animation:fade .25s ease} .screen.active{display:block}
+
+  .screen{display:none; animation:fade .25s ease}
+  .screen.active{display:block}
   @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)}}
+
   .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px}
   .stack{display:flex; flex-direction:column; gap:12px}
   .row{display:flex; gap:10px; align-items:center}
-  .grid{display:grid; gap:12px} .grid.cols2{grid-template-columns:1fr 1fr} .grid.cols3{grid-template-columns:1fr 1fr 1fr}
+  .grid{display:grid; gap:12px}
+  .grid.cols2{grid-template-columns:1fr 1fr}
+  .grid.cols3{grid-template-columns:1fr 1fr 1fr}
   .pill{background:var(--chip); border:1px solid var(--line); padding:8px 12px; border-radius:999px; font-size:13px}
   .badge{font-size:11px; padding:4px 8px; border-radius:999px; background:#fff; border:1px solid var(--line); color:var(--accent)}
   .muted{color:var(--muted)}
@@ -45,10 +50,11 @@
   .chip{padding:8px 12px; border-radius:999px; border:1px solid var(--line); background:#fff; font-size:12px; cursor:pointer}
   .chip.active{outline:2px solid var(--brand); color:#9d174d; background:#fff0f6}
   .stat{border:1px solid var(--line); border-radius:14px; background:#fff; padding:12px}
-  .bar{height:8px; background:#f3f4f6; border:1px solid var(--line); border-radius:999px; overflow:hidden} .bar i{display:block; height:100%; background:linear-gradient(90deg,var(--brand),var(--brand-2),var(--brand-3))}
+  .bar{height:8px; background:#f3f4f6; border:1px solid var(--line); border-radius:999px; overflow:hidden}
+  .bar i{display:block; height:100%; background:linear-gradient(90deg,var(--brand),var(--brand-2),var(--brand-3))}
   .empty{color:#9ca3af; font-size:14px}
   .avatar{width:64px;height:64px;border-radius:16px;border:1px solid var(--line);background:radial-gradient(circle at 30% 20%, #fed7e2, #f472b6 60%, #9d174d)}
-  .edit{cursor:pointer}
+  .nimg{width:64px;height:64px;border-radius:16px;border:1px solid var(--line);object-fit:cover;display:block}
 
   /* Tabbar */
   .tabbar{position:fixed; left:0; right:0; bottom:0; z-index:10; margin:auto; max-width:480px; padding:10px 12px; display:none; grid-template-columns:repeat(5,1fr); gap:8px; background:#ffffffcc; backdrop-filter:blur(8px); border-top:1px solid var(--line)}
@@ -61,7 +67,8 @@
   .bubble{max-width:78%; padding:10px 12px; border-radius:14px; border:1px solid var(--line); background:#fff}
   .me{align-self:flex-end; background:#fff0f6}
   .bot{align-self:flex-start; background:#f8fafc}
-  .composer{display:flex; gap:8px; margin-top:8px} .composer input{flex:1}
+  .composer{display:flex; gap:8px; margin-top:8px}
+  .composer input{flex:1}
 
   /* Calendario inline */
   .cal-wrap{border:1px solid var(--line); border-radius:16px; padding:12px}
@@ -71,9 +78,14 @@
   .dot{width:6px; height:6px; border-radius:50%; background:#ec4899; position:absolute; right:6px; bottom:6px}
 
   /* Toggle de pestañas del acceso */
-  .tabbtn{ transition:.15s ease; }
-  .tabbtn.active{ background:linear-gradient(180deg, var(--brand), var(--brand-2)); color:#fff; border:none }
-  .tabbtn:not(.active){ background:#fff; color:var(--text); border:1px solid var(--line) }
+  .tabbtn{transition:.15s ease}
+  .tabbtn.active{background:linear-gradient(180deg, var(--brand), var(--brand-2)); color:#fff; border:none}
+  .tabbtn:not(.active){background:#fff; color:var(--text); border:1px solid var(--line)}
+
+  /* MODAL */
+  .modal-backdrop{position:fixed; inset:0; background:#0006; display:none; align-items:center; justify-content:center; z-index:50}
+  .modal{width:min(480px,92%); background:#fff; border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); padding:16px}
+  .modal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -88,11 +100,11 @@
 
     <!-- Tabbar -->
     <div class="tabbar" id="tabbar">
-      <button data-view="yo" class="active"><span class="ico">💖</span><span>Yo mamá</span></button>
-      <button data-view="faq"><span class="ico">💬</span><span>Chat</span></button>
-      <button data-view="nawi"><span class="ico">👩‍🍼</span><span>Nawi Wawa</span></button>
       <button data-view="perfil"><span class="ico">👤</span><span>Perfil</span></button>
-      <button data-view="tribu"><span class="ico">📅</span><span>Tribu</span></button>
+      <button data-view="yo" class="active"><span class="ico">👩‍👧‍👦</span><span>Yo mamá</span></button>
+      <button data-view="tribu"><span class="ico">👨‍👩‍👧</span><span>Tribu</span></button>
+      <button data-view="nawi"><span class="ico">👩‍🍼</span><span>Nawi Wawa</span></button>
+      <button data-view="faq"><span class="ico">💬</span><span>Chat</span></button>
     </div>
 
     <!-- ACCESO -->
@@ -105,15 +117,15 @@
 
         <!-- Login -->
         <div id="loginTab" class="stack">
-          <div class="field"><label>Email o teléfono</label><input id="loginUser" placeholder="tú@correo.com / 999 888 777"/></div>
+          <div class="field"><label>Email o teléfono</label><input id="loginUser" placeholder="tu@correo.com / 999 888 777"/></div>
           <div class="field"><label>Contraseña (demo)</label><input id="loginPass" type="password" placeholder="••••••"/></div>
-          <button class="btn brand" onclick="login()">Ingresar</button>
+          <button class="btn brand" id="btnLogin">Ingresar</button>
         </div>
 
         <!-- Registro -->
         <div id="signupTab" class="stack" style="display:none">
           <div class="field"><label>Nombre</label><input id="r_nombre" placeholder="Tu nombre"/></div>
-          <div class="field"><label>Email o teléfono</label><input id="r_contacto" placeholder="tú@correo.com / 999 888 777"/></div>
+          <div class="field"><label>Email o teléfono</label><input id="r_contacto" placeholder="tu@correo.com / 999 888 777"/></div>
           <div class="field"><label>Contraseña (demo)</label><input id="r_pass" type="password" placeholder="Mínimo 6 caracteres"/></div>
 
           <div class="grid cols2">
@@ -144,7 +156,7 @@
 
           <div class="field"><label>Hijos/as (nombres, separados por coma)</label><input id="r_hijos" placeholder="Ej: Lucas, Renata"/></div>
           <div class="row"><input id="r_whatsapp" type="checkbox" style="width:auto"/><label for="r_whatsapp">Quiero recibir apoyo por WhatsApp</label></div>
-          <button class="btn brand" onclick="registrar()">Crear cuenta y entrar</button>
+          <button class="btn brand" id="btnRegistrar">Crear cuenta y entrar</button>
         </div>
       </div>
     </section>
@@ -158,22 +170,23 @@
         </div>
         <div class="grid cols2">
           <select id="logTipo">
-            <option>Ánimo</option><option>Lactancia</option><option>Sueño</option><option>Rutina</option><option>Salud</option><option>Otro</option>
+            <option value="">Selecciona…</option>
+            <option>Salud</option><option>Cansancio</option><option>Sueño</option>
+            <option>Ánimo</option><option>Rutina de bebé</option><option>Lactancia</option>
           </select>
-          <input id="logAnimo" type="number" min="1" max="5" placeholder="Ánimo 1–5"/>
+          <input id="logAnimo" type="number" min="1" max="5" placeholder="1–5"/>
         </div>
-        <textarea id="logNota" rows="3" placeholder="Escribe una nota breve…"></textarea>
         <div class="grid cols2">
           <input id="logFecha" type="date"/>
-          <button class="btn brand" onclick="agregarLog()">Guardar</button>
+          <button class="btn brand" id="btnGuardarLog">Guardar</button>
         </div>
       </div>
 
       <div class="cal-wrap">
         <div class="cal-head">
-          <button class="btn" onclick="cambiarMes(-1)">←</button>
+          <button class="btn" id="calPrev">←</button>
           <div class="pill" id="calTitulo">—</div>
-          <button class="btn" onclick="cambiarMes(1)">→</button>
+          <button class="btn" id="calNext">→</button>
         </div>
         <div class="cal-grid" id="calGrid"></div>
         <div class="stack" id="calDetalle"></div>
@@ -182,9 +195,11 @@
       <div class="card stack">
         <h4 style="margin:0">Te aconsejamos</h4>
         <div class="stack">
-          <div class="pill">💗 “Lo haces increíble. Pide ayuda; criar también es hacer equipo.”</div>
+          <div class="pill">💗 "Lo haces increíble. Pide ayuda; criar también es hacer equipo."</div>
           <div class="pill">🕯️ 3 respiraciones profundas antes de dormir pueden mejorar tu descanso.</div>
-          <div class="pill">🎧 Charla: “Sueño del RN en 20 min” — Jue 7pm, virtual. <button class="btn" onclick="alert('Inscrita (demo)')">Inscribirme</button></div>
+          <div class="pill">🎧 Charla: "Sueño del RN en 20 min" — Jue 7pm, virtual.
+            <button class="btn" id="btnInscribirme1">Inscribirme</button>
+          </div>
         </div>
       </div>
 
@@ -200,12 +215,20 @@
       <div class="card stack">
         <h3 style="margin:0 0 6px">Chat con el bot 🤖</h3>
         <div class="chips">
-          <span class="chip" onclick="quickAsk('lactancia')">Lactancia</span>
-          <span class="chip" onclick="quickAsk('sueño')">Sueño</span>
-          <span class="chip" onclick="quickAsk('rutina')">Rutinas</span>
+          <span class="chip" id="chipAyuda">¿Cómo uso la app?</span>
+          <span class="chip" id="chipPerfil">¿Dónde edito mi perfil?</span>
+          <span class="chip" id="chipYo">¿Cómo registro mi día?</span>
+          <span class="chip" id="chipTribu">¿Cómo me inscribo a charlas?</span>
+          <span class="chip" id="chipNawi">¿Cómo busco una niñera?</span>
+          <span class="chip" id="chipLactancia">Lactancia</span>
+          <span class="chip" id="chipSueno">Sueño</span>
+          <span class="chip" id="chipRutina">Rutinas</span>
         </div>
-        <div class="chat" id="chat"><div class="bubble bot">Hola, soy tu bot. Pregúntame sobre lactancia, sueño o rutinas.</div></div>
-        <div class="composer"><input id="inp" placeholder="Escribe tu pregunta..."/><button class="btn brand" onclick="send()">Enviar</button></div>
+        <div class="chat" id="chat"><div class="bubble bot">Hola, soy tu asistente. Puedo guiarte por la app o darte tips de lactancia, sueño y rutinas.</div></div>
+        <div class="composer">
+          <input id="inp" placeholder="Escribe tu pregunta..."/>
+          <button class="btn brand" id="btnSend">Enviar</button>
+        </div>
       </div>
     </section>
 
@@ -214,12 +237,19 @@
       <div class="card stack">
         <h3 style="margin:0">Nawi Wawa — Buscar niñeras 👩‍🍼✨</h3>
         <div class="muted" style="font-size:13px">Explora perfiles verificados y conecta por WhatsApp.</div>
-        <div class="row">
-          <input id="f_zona" placeholder="Zona (ej. Lima Este)"/>
-          <select id="f_exp"><option value="">Experiencia</option><option>RN/0–3m</option><option>3–6m</option><option>Gemelos</option></select>
-          <button class="btn brand" onclick="filtrar()">Buscar</button>
+        <div class="row" style="flex-wrap:wrap">
+          <select id="f_zona">
+            <option value="">Distrito</option>
+            <option>Lima Centro</option><option>Lima Norte</option><option>Lima Sur</option><option>Lima Este</option>
+            <option>Miraflores</option><option>San Isidro</option><option>Santiago de Surco</option><option>La Molina</option>
+          </select>
+          <select id="f_modal">
+            <option value="">Modalidad vivienda</option>
+            <option>Cama adentro</option><option>Cama afuera</option>
+          </select>
+          <button class="btn brand" id="btnBuscarNawi">Buscar</button>
         </div>
-        <div class="list" id="nannies"></div>
+        <div class="stack" id="nannies"></div>
       </div>
     </section>
 
@@ -232,7 +262,7 @@
             <h3 id="p_nombre" style="margin:0">Mamá</h3>
             <div class="muted" id="p_contacto" style="font-size:12px">—</div>
           </div>
-          <span class="edit" title="Editar nombre" onclick="editarCampo()">✏️</span>
+          <button class="btn" id="btnEditarNombre" title="Editar nombre">✏️</button>
         </div>
         <div class="grid cols2">
           <div class="pill">👶 Edad bebé: <b id="p_edad">—</b></div>
@@ -243,20 +273,45 @@
       </div>
 
       <div class="card stack">
-        <div class="row" style="justify-content:space-between"><h4 style="margin:0">Hijos/as</h4><span class="edit" onclick="editarHijos()">✏️</span></div>
+        <div class="row" style="justify-content:space-between">
+          <h4 style="margin:0">Hijos/as</h4>
+          <button class="btn" id="btnEditarHijos">✏️</button>
+        </div>
         <div id="listaHijos" class="chips"></div>
         <div class="empty" id="emptyHijos">Aún no registraste hijos. Puedes agregar desde ✏️.</div>
-        <button class="btn" onclick="logout()">Cerrar sesión</button>
+        <button class="btn" id="btnLogout">Cerrar sesión</button>
       </div>
     </section>
 
-    <!-- TRIBU (Agenda) -->
+    <!-- TRIBU (Agenda + reuniones) -->
     <section class="screen" id="tribu">
       <div class="card stack">
-        <h3 style="margin:0">Tribu — Agenda de charlas y talleres 📅</h3>
+        <div class="row" style="justify-content:space-between">
+          <h3 style="margin:0">Tribu — Agenda de charlas y talleres 📅</h3>
+          <button class="btn brand" id="btnNuevaReunion">Programar reunión</button>
+        </div>
         <div id="agenda" class="stack"></div>
       </div>
     </section>
+
+    <!-- MODAL REUNIÓN -->
+    <div class="modal-backdrop" id="bk">
+      <div class="modal">
+        <div class="modal-head">
+          <h3 style="margin:0">Programar reunión</h3>
+          <button class="btn" id="btnCerrarModal">✖</button>
+        </div>
+        <div class="stack">
+          <div class="field"><label>Tema o título</label><input id="m_tema" placeholder="Charla entre mamás"/></div>
+          <div class="grid cols2">
+            <div class="field"><label>Fecha</label><input id="m_fecha" type="date"/></div>
+            <div class="field"><label>Hora</label><input id="m_hora" type="time" value="19:00"/></div>
+          </div>
+          <div class="field"><label>Link (Zoom/Meet)</label><input id="m_link" placeholder="https://…"/></div>
+          <button class="btn brand" id="btnCrearReunion">Crear reunión</button>
+        </div>
+      </div>
+    </div>
 
     <!-- TOAST -->
     <div id="toast" style="
@@ -266,232 +321,423 @@
       display:flex;gap:8px;align-items:center;font-weight:700;">
       <span>🌷 ¡Lo estás haciendo bien, mamá! Registro guardado.</span>
     </div>
-
   </div>
 
 <script>
-  /* ========= Helpers UI ========= */
-  const tabbar = document.getElementById('tabbar');
-  const screens = [...document.querySelectorAll('.screen')];
-  function goto(view){ screens.forEach(s=>s.classList.toggle('active', s.id===view)); if(view!=='acceso'){ tabbar.style.display='grid'; } [...tabbar.children].forEach(b=>b.classList.toggle('active', b.dataset.view===view)); window.scrollTo({top:0,behavior:'smooth'}); }
-  tabbar.addEventListener('click',(e)=>{ const btn=e.target.closest('button'); if(!btn) return; goto(btn.dataset.view); });
+/* ===== Helpers UI ===== */
+var tabbar = document.getElementById('tabbar');
+var screens = Array.prototype.slice.call(document.querySelectorAll('.screen'));
+function goto(view){
+  screens.forEach(function(s){ s.classList.toggle('active', s.id===view); });
+  if(view!=='acceso'){ tabbar.style.display='grid'; }
+  Array.prototype.forEach.call(tabbar.children, function(b){ b.classList.toggle('active', b.dataset.view===view); });
+  window.scrollTo(0,0);
+}
+tabbar.addEventListener('click', function(e){
+  var btn = e.target.closest('button');
+  if(!btn) return;
+  goto(btn.dataset.view);
+});
 
-  // Tabs acceso base
-  function showTab(id){ const login=document.getElementById('loginTab'); const signup=document.getElementById('signupTab'); if(login) login.style.display=(id==='loginTab')?'block':'none'; if(signup) signup.style.display=(id==='signupTab')?'block':'none'; }
+/* ===== Access tabs ===== */
+function showTab(id){
+  var login = document.getElementById('loginTab');
+  var signup = document.getElementById('signupTab');
+  if(login) login.style.display = (id==='loginTab')?'block':'none';
+  if(signup) signup.style.display = (id==='signupTab')?'block':'none';
+}
+var tabButtons = Array.prototype.slice.call(document.querySelectorAll('.tabbtn'));
+function setAccessTab(tabId){
+  showTab(tabId);
+  tabButtons.forEach(function(b){ b.classList.toggle('active', b.dataset.tab===tabId); });
+}
+tabButtons.forEach(function(b){ b.addEventListener('click', function(){ setAccessTab(b.dataset.tab); }); });
+setAccessTab('loginTab');
 
-  // --- Toggle de pestañas Acceso (rosa/blanco) ---
-  const tabButtons = Array.from(document.querySelectorAll('.tabbtn'));
-  function setAccessTab(tabId){
-    showTab(tabId);
-    tabButtons.forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+/* ===== Chips ===== */
+function toggleChip(el){
+  var group = el.getAttribute('data-group');
+  if(group==='apoyos'){
+    el.classList.toggle('active');
+    var anyOtro = Array.prototype.some.call(document.querySelectorAll('.chip[data-group="apoyos"].active'), function(x){ return x.textContent==='Otro'; });
+    document.getElementById('apoyoOtro').style.display = anyOtro ? 'block':'none';
+    return;
   }
-  tabButtons.forEach(b => b.addEventListener('click', () => setAccessTab(b.dataset.tab)));
-  // estado inicial
-  setAccessTab(tabButtons.find(b=>b.classList.contains('active'))?.dataset.tab || 'loginTab');
+  Array.prototype.forEach.call(document.querySelectorAll('.chip[data-group="'+group+'"]'), function(c){ c.classList.remove('active'); });
+  el.classList.add('active');
+}
+Array.prototype.forEach.call(document.querySelectorAll('.chip[data-group]'), function(c){
+  c.addEventListener('click', function(){ toggleChip(c); });
+});
 
-  function toggleChip(el){ const group=el.getAttribute('data-group'); if(group==='apoyos'){ el.classList.toggle('active'); document.getElementById('apoyoOtro').style.display = (document.querySelector('.chip[data-group="apoyos"].active')?.textContent==='Otro') ? 'block' : 'none'; return; } document.querySelectorAll('.chip[data-group="'+group+'"]').forEach(c=>c.classList.remove('active')); el.classList.add('active'); }
-  document.querySelectorAll('.chip[data-group]').forEach(c=>c.addEventListener('click',()=>toggleChip(c)));
+/* ===== Estado ===== */
+var state = {
+  usuario:null,
+  perfil:null,
+  registros: JSON.parse(localStorage.getItem('cm360.logs')||'[]')
+};
 
-  /* ========= Estado ========= */
-  const state = {
-    usuario:null,
-    perfil:null,
-    registros: JSON.parse(localStorage.getItem('cm360.logs')||'[]')
-  };
+/* ===== Toast ===== */
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.firstElementChild.textContent = msg || '🌷 ¡Lo estás haciendo bien, mamá! Registro guardado.';
+  t.style.opacity='1';
+  t.style.transform='translateX(-50%) translateY(0)';
+  setTimeout(function(){
+    t.style.opacity='0';
+    t.style.transform='translateX(-50%) translateY(-20px)';
+  }, 1600);
+}
 
-  /* ========= Login / Registro ========= */
-  function login(){
-    const u = document.getElementById('loginUser').value.trim();
-    const p = document.getElementById('loginPass').value.trim();
-    if(!u || !p){ showToast('💡 Completa usuario y contraseña.'); return; }
-    state.usuario = {nombre:'Mamá', contacto:u};
-    if(!state.perfil){ state.perfil = {edad:2, primer:'Sí', apoyoNivel:'Medio', apoyos:['Pareja'], whatsapp:true, hijos:[]}; }
-    refrescarPerfil(); initCalendarioToToday(); goto('yo'); renderTodo();
+/* ===== Login / Registro ===== */
+document.getElementById('btnLogin').addEventListener('click', function(){
+  var u = document.getElementById('loginUser').value.trim();
+  var p = document.getElementById('loginPass').value.trim();
+  if(!u || !p){ showToast('Completa usuario y contraseña.'); return; }
+  state.usuario = {nombre:'Mamá', contacto:u};
+  if(!state.perfil){ state.perfil = {edad:2, primer:'Sí', apoyoNivel:'Medio', apoyos:['Pareja'], whatsapp:true, hijos:[]}; }
+  refrescarPerfil(); initCalendarioToToday(); goto('yo'); renderTodo();
+});
+
+document.getElementById('btnRegistrar').addEventListener('click', function(){
+  var nombre = document.getElementById('r_nombre').value.trim();
+  var contacto = document.getElementById('r_contacto').value.trim();
+  var pass = document.getElementById('r_pass').value.trim();
+  var edad = parseInt(document.getElementById('r_edad').value||'0',10);
+  var primer = (document.querySelector('.chip[data-group="primer"].active')||{}).textContent || 'Sí';
+  var apoyoNivel = (document.querySelector('.chip[data-group="apoyoNivel"].active')||{}).textContent || 'Medio';
+  var apoyosSel = Array.prototype.map.call(document.querySelectorAll('.chip[data-group="apoyos"].active'), function(x){ return x.textContent; });
+  var otro = document.getElementById('apoyoOtro').value.trim();
+  if(apoyosSel.indexOf('Otro')>-1 && otro){ apoyosSel[apoyosSel.indexOf('Otro')] = otro; }
+  var hijos = (document.getElementById('r_hijos').value||'').split(',').map(function(s){return s.trim();}).filter(function(x){return !!x;});
+  var whatsapp = document.getElementById('r_whatsapp').checked;
+  if(!nombre || !contacto || pass.length<6){ showToast('Revisa nombre, contacto y contraseña (≥6).'); return; }
+  state.usuario = {nombre:nombre, contacto:contacto};
+  state.perfil = {edad:edad, primer:primer, apoyoNivel:apoyoNivel, apoyos:apoyosSel, whatsapp:whatsapp, hijos:hijos};
+  refrescarPerfil(); initCalendarioToToday(); goto('yo'); renderTodo();
+});
+
+document.getElementById('btnLogout').addEventListener('click', function(){
+  localStorage.removeItem('cm360.logs');
+  state.usuario=null; state.perfil=null; state.registros=[];
+  tabbar.style.display='none'; goto('acceso');
+});
+
+/* ===== Perfil ===== */
+function refrescarPerfil(){
+  document.getElementById('p_nombre').textContent = (state.usuario && state.usuario.nombre) ? state.usuario.nombre : 'Mamá';
+  document.getElementById('p_contacto').textContent = (state.usuario && state.usuario.contacto) ? state.usuario.contacto : '—';
+  document.getElementById('p_edad').textContent = ((state.perfil && state.perfil.edad)!=null ? state.perfil.edad : '—') + ' m';
+  document.getElementById('p_primer').textContent = state.perfil ? state.perfil.primer : '—';
+  document.getElementById('p_apoyo').textContent = state.perfil ? state.perfil.apoyoNivel : '—';
+  document.getElementById('p_apoyos').textContent = (state.perfil && state.perfil.apoyos && state.perfil.apoyos.length) ? state.perfil.apoyos.join(', ') : '—';
+
+  var hijosWrap = document.getElementById('listaHijos');
+  hijosWrap.innerHTML='';
+  var hijos = (state.perfil && state.perfil.hijos) ? state.perfil.hijos : [];
+  hijos.forEach(function(h){
+    var s=document.createElement('span'); s.className='pill'; s.textContent='👶 '+h; hijosWrap.appendChild(s);
+  });
+  document.getElementById('emptyHijos').style.display = hijos.length ? 'none':'block';
+
+  var edad = state.perfil ? (state.perfil.edad||0) : 0;
+  var etapa = edad<=3 ? '0–3m' : (edad<=6 ? '3–6m' : '6m+');
+  var primerx = (state.perfil && /No/i.test(state.perfil.primer||'')) ? 'no primerx' : 'primerx';
+  var apoyo = (state.perfil ? (state.perfil.apoyoNivel||'Medio') : 'Medio').toLowerCase();
+  document.getElementById('segmento').textContent = etapa + ' | ' + primerx + ' | apoyo ' + apoyo;
+}
+document.getElementById('btnEditarNombre').addEventListener('click', function(){
+  var nuevo = prompt('Nuevo nombre:', state.usuario ? state.usuario.nombre : '');
+  if(nuevo){ state.usuario.nombre = nuevo; refrescarPerfil(); }
+});
+document.getElementById('btnEditarHijos').addEventListener('click', function(){
+  var actual = (state.perfil && state.perfil.hijos) ? state.perfil.hijos.join(', ') : '';
+  var txt = prompt('Hijos/as (separados por coma):', actual);
+  if(txt!==null){ state.perfil.hijos = txt.split(',').map(function(s){return s.trim();}).filter(function(x){return !!x;}); refrescarPerfil(); }
+});
+
+/* ===== Yo mamá: registros ===== */
+var logFecha = document.getElementById('logFecha');
+function todayStr(d){ d = d || new Date(); var y=d.getFullYear(); var m=('0'+(d.getMonth()+1)).slice(-2); var dd=('0'+d.getDate()).slice(-2); return y+'-'+m+'-'+dd; }
+
+document.getElementById('btnGuardarLog').addEventListener('click', function(){
+  var tipo  = document.getElementById('logTipo').value;
+  var animo = parseInt(document.getElementById('logAnimo').value||'0',10) || null;
+  var date  = logFecha.value || todayStr();
+
+  if(!tipo){ showToast('Selecciona un tipo.'); return; }
+  if(!animo){ showToast('Ingresa un valor de 1 a 5.'); return; }
+
+  state.registros.push({date:date, tipo:tipo, animo:animo});
+  localStorage.setItem('cm360.logs', JSON.stringify(state.registros));
+
+  document.getElementById('logTipo').selectedIndex = 0;
+  document.getElementById('logAnimo').value = '';
+
+  dibujarCalendario(); mostrarDia(new Date(date)); renderStats();
+  showToast('🌷 ¡Lo estás haciendo bien, mamá! Registro guardado.');
+});
+
+/* ===== Stats ===== */
+function regsByDateStr(ymd){ return state.registros.filter(function(r){ return r.date===ymd; }); }
+function weekStats(){
+  var d=new Date(); var day=(d.getDay()+6)%7;
+  var start=new Date(d.getFullYear(),d.getMonth(),d.getDate()-day);
+  var end=new Date(start); end.setDate(start.getDate()+7);
+  var list = state.registros.filter(function(r){ var t=new Date(r.date); return t>=start && t<end; });
+  var hoy = state.registros.filter(function(r){ return r.date===todayStr(); });
+  var animos = list.map(function(r){ return r.animo; }).filter(function(x){ return !!x; });
+  return {hoy:hoy.length, semana:list.length, prom: animos.length ? (animos.reduce(function(a,b){return a+b;},0)/animos.length) : null};
+}
+function renderStats(){
+  var s = weekStats();
+  document.getElementById('statHoy').textContent = s.hoy;
+  document.getElementById('statSemana').textContent = s.semana;
+  document.getElementById('statAnimo').textContent = (s.prom==null ? '—' : s.prom.toFixed(1));
+  document.getElementById('barHoy').style.width = Math.min(s.hoy*20,100)+'%';
+  document.getElementById('barSem').style.width = Math.min(s.semana*12,100)+'%';
+  document.getElementById('barAni').style.width = (s.prom ? s.prom*20 : 0)+'%';
+}
+
+/* ===== Calendario ===== */
+var calMes, calAno;
+function initCalendarioToToday(){
+  var t=new Date(); calMes=t.getMonth(); calAno=t.getFullYear();
+  logFecha.value=todayStr(t); dibujarCalendario(); mostrarDia(t);
+}
+function cambiarMes(delta){
+  calMes += delta; if(calMes<0){calMes=11; calAno--;} if(calMes>11){calMes=0; calAno++;}
+  dibujarCalendario(); document.getElementById('calDetalle').innerHTML='';
+}
+document.getElementById('calPrev').addEventListener('click', function(){ cambiarMes(-1); });
+document.getElementById('calNext').addEventListener('click', function(){ cambiarMes(1); });
+
+function dibujarCalendario(){
+  var grid=document.getElementById('calGrid');
+  var titulo=document.getElementById('calTitulo');
+  var first=new Date(calAno,calMes,1); var startDay=(first.getDay()+6)%7; var days=new Date(calAno,calMes+1,0).getDate();
+  titulo.textContent=new Date(calAno,calMes).toLocaleDateString('es-PE',{month:'long',year:'numeric'});
+  grid.innerHTML='';
+
+  ['L','M','M','J','V','S','D'].forEach(function(d){
+    var h=document.createElement('div'); h.className='muted'; h.style.textAlign='center'; h.textContent=d; grid.appendChild(h);
+  });
+  for(var i=0;i<startDay;i++){ var emp=document.createElement('div'); emp.className='day'; emp.style.visibility='hidden'; grid.appendChild(emp); }
+  for(var d=1; d<=days; d++){
+    var cell=document.createElement('div'); cell.className='day'; var fecha=new Date(calAno,calMes,d);
+    var ymd=todayStr(fecha);
+    var n=document.createElement('div'); n.style.fontWeight='700'; n.textContent=String(d); cell.appendChild(n);
+    if(regsByDateStr(ymd).length){ var dot=document.createElement('div'); dot.className='dot'; cell.appendChild(dot); }
+    (function(ymdCopy, fechaCopy){
+      cell.addEventListener('click', function(){ logFecha.value=ymdCopy; mostrarDia(fechaCopy); });
+    })(ymd, fecha);
+    grid.appendChild(cell);
   }
-  function registrar(){
-    const nombre = document.getElementById('r_nombre').value.trim();
-    const contacto = document.getElementById('r_contacto').value.trim();
-    const pass = document.getElementById('r_pass').value.trim();
-    const edad = parseInt(document.getElementById('r_edad').value||'0',10);
-    const primer = (document.querySelector('.chip[data-group="primer"].active')||{}).textContent || 'Sí';
-    const apoyoNivel = (document.querySelector('.chip[data-group="apoyoNivel"].active')||{}).textContent || 'Medio';
-    const apoyosSel = [...document.querySelectorAll('.chip[data-group="apoyos"].active')].map(x=>x.textContent);
-    const otro = document.getElementById('apoyoOtro').value.trim(); if(apoyosSel.includes('Otro') && otro) apoyosSel[apoyosSel.indexOf('Otro')] = otro;
-    const hijos = (document.getElementById('r_hijos').value||'').split(',').map(s=>s.trim()).filter(Boolean);
-    const whatsapp = document.getElementById('r_whatsapp').checked;
-    if(!nombre || !contacto || pass.length<6){ showToast('💡 Revisa nombre, contacto y contraseña (≥6).'); return; }
-    state.usuario = {nombre, contacto};
-    state.perfil = {edad, primer, apoyoNivel, apoyos:apoyosSel, whatsapp, hijos};
-    refrescarPerfil(); initCalendarioToToday(); goto('yo'); renderTodo();
-  }
-  function logout(){ localStorage.removeItem('cm360.logs'); state.usuario=null; state.perfil=null; state.registros=[]; tabbar.style.display='none'; goto('acceso'); }
+}
+function mostrarDia(fecha){
+  var ymd=todayStr(fecha);
+  var det=document.getElementById('calDetalle');
+  det.innerHTML='';
+  var h=document.createElement('h4'); h.style.margin='6px 0'; h.textContent='Registros de '+fecha.toLocaleDateString(); det.appendChild(h);
+  var list=regsByDateStr(ymd);
+  if(!list.length){ var e=document.createElement('div'); e.className='empty'; e.textContent='Sin registros este día.'; det.appendChild(e); return; }
+  list.forEach(function(r){
+    var el=document.createElement('div'); el.className='pill';
+    var txt = r.tipo + (r.animo ? ' ('+r.animo+'/5)' : '');
+    el.textContent = txt; det.appendChild(el);
+  });
+}
 
-  /* ========= Perfil ========= */
-  function refrescarPerfil(){
-    document.getElementById('p_nombre').textContent = state.usuario?.nombre || 'Mamá';
-    document.getElementById('p_contacto').textContent = state.usuario?.contacto || '—';
-    document.getElementById('p_edad').textContent = (state.perfil?.edad ?? '—') + ' m';
-    document.getElementById('p_primer').textContent = state.perfil?.primer || '—';
-    document.getElementById('p_apoyo').textContent = (state.perfil?.apoyoNivel || '—');
-    document.getElementById('p_apoyos').textContent = (state.perfil?.apoyos || []).join(', ') || '—';
-    const hijosWrap = document.getElementById('listaHijos'); hijosWrap.innerHTML='';
-    (state.perfil?.hijos||[]).forEach(h=>{const s=document.createElement('span'); s.className='pill'; s.textContent='👶 '+h; hijosWrap.appendChild(s);});
-    document.getElementById('emptyHijos').style.display = (state.perfil?.hijos||[]).length? 'none':'block';
-    const edad = state.perfil?.edad ?? 0;
-    const etapa = edad<=3 ? '0–3m' : (edad<=6?'3–6m':'6m+');
-    const primerx = (/No/i.test(state.perfil?.primer||'')?'no primerx':'primerx');
-    const apoyo = (state.perfil?.apoyoNivel||'Medio').toLowerCase();
-    document.getElementById('segmento').textContent = `${etapa} | ${primerx} | apoyo ${apoyo}`;
-  }
-  function editarCampo(){ const nuevo = prompt('Nuevo nombre:', state.usuario?.nombre||''); if(nuevo){ state.usuario.nombre = nuevo; refrescarPerfil(); } }
-  function editarHijos(){ const actual = (state.perfil?.hijos||[]).join(', '); const txt = prompt('Hijos/as (separados por coma):', actual); if(txt!==null){ state.perfil.hijos = txt.split(',').map(s=>s.trim()).filter(Boolean); refrescarPerfil(); } }
+/* ===== Chat ===== */
+var chat = document.getElementById('chat');
+function addBubble(role, text){
+  var b=document.createElement('div');
+  b.className='bubble '+(role==='me'?'me':'bot'); b.textContent=text;
+  chat.appendChild(b); chat.scrollTop=chat.scrollHeight;
+}
+function respond(q){
+  var t=q.toLowerCase();
+  var ans='Te puedo guiar por la app: Perfil, Yo mamá, Tribu y Nawi Wawa. ¿Qué necesitas?';
+  if(t.indexOf('perfil')>-1) ans='Para ver/editar tu perfil: Tabbar → Perfil. Ahí cambias nombre e hijos con ✏️.';
+  if(t.indexOf('yo mamá')>-1 || t.indexOf('yo mama')>-1 || t.indexOf('registro')>-1) ans='En Yo mamá selecciona un tipo (Salud, Sueño, etc.), pon un valor 1–5 y Guarda. Se refleja en el calendario.';
+  if(t.indexOf('tribu')>-1 || t.indexOf('charl')>-1 || t.indexOf('reuni')>-1) ans='En Tribu verás charlas. Para crear una, toca “Programar reunión” y completa el modal.';
+  if(t.indexOf('nawi')>-1 || t.indexOf('niñe')>-1 || t.indexOf('nana')>-1) ans='En Nawi Wawa filtra por distrito y modalidad (cama adentro/afuera) y contacta por WhatsApp.';
+  if(t.indexOf('lact')>-1) ans='Lactancia: tomas cada 2–3h suelen funcionar en RN. Observa señales tempranas.';
+  if(t.indexOf('sueñ')>-1 || t.indexOf('siest')>-1) ans='Sueño: ventana de vigilia 45–60 min y ambiente oscuro + ruido blanco.';
+  if(t.indexOf('rutina')>-1) ans='Rutina: 2–3 anclas (baño, canción, arrullo) ayudan a anticipar.';
+  if(t.indexOf('uso la app')>-1 || t.indexOf('cómo uso')>-1) ans='La barra inferior cambia de sección. Empieza por Perfil, luego usa Yo mamá para registrar; Tribu para charlas; Nawi Wawa para niñeras.';
+  addBubble('bot', ans);
+}
+document.getElementById('btnSend').addEventListener('click', function(){
+  var inp=document.getElementById('inp'); var q=inp.value.trim(); if(!q) return;
+  addBubble('me', q); inp.value=''; setTimeout(function(){ respond(q); }, 450);
+});
+document.getElementById('chipAyuda').addEventListener('click', function(){ document.getElementById('inp').value='¿Cómo uso la app?'; document.getElementById('btnSend').click(); });
+document.getElementById('chipPerfil').addEventListener('click', function(){ document.getElementById('inp').value='¿Dónde edito mi perfil?'; document.getElementById('btnSend').click(); });
+document.getElementById('chipYo').addEventListener('click', function(){ document.getElementById('inp').value='¿Cómo registro mi día?'; document.getElementById('btnSend').click(); });
+document.getElementById('chipTribu').addEventListener('click', function(){ document.getElementById('inp').value='¿Cómo me inscribo a charlas?'; document.getElementById('btnSend').click(); });
+document.getElementById('chipNawi').addEventListener('click', function(){ document.getElementById('inp').value='¿Cómo busco una niñera?'; document.getElementById('btnSend').click(); });
+document.getElementById('chipLactancia').addEventListener('click', function(){ document.getElementById('inp').value='Lactancia'; document.getElementById('btnSend').click(); });
+document.getElementById('chipSueno').addEventListener('click', function(){ document.getElementById('inp').value='Sueño'; document.getElementById('btnSend').click(); });
+document.getElementById('chipRutina').addEventListener('click', function(){ document.getElementById('inp').value='Rutina'; document.getElementById('btnSend').click(); });
 
-  /* ========= Yo mamá: Registros ========= */
-  const logFecha = document.getElementById('logFecha');
-  function todayStr(d=new Date()){ const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,'0'); const dd=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${dd}`; }
+/* ===== Nawi (con fotos) ===== */
+var dataNannies = [
+  {id:1, nombre:'María López', distrito:'Lima Este', modalViv:'Cama adentro', rating:4.8, modos:['Por horas','Día','Permanente'], ver:['DNI verificado','Antecedentes'], foto:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...'},
+  {id:2, nombre:'Rosa Pérez', distrito:'Miraflores', modalViv:'Cama afuera', rating:4.6, modos:['Permanente','Nana SOS'], ver:['Entrevista','Referencia'], foto:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...'},
+  {id:3, nombre:'Karla Díaz', distrito:'Lima Sur', modalViv:'Cama adentro', rating:4.7, modos:['Por horas','Nana SOS'], ver:['DNI verificado'], foto:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...'},
+  {id:4, nombre:'Elena Cruz', distrito:'San Isidro', modalViv:'Cama afuera', rating:4.9, modos:['Día','Permanente','Nana SOS'], ver:['Referencia','Antecedentes'], foto:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...'}
+];
+// (los base64 son placeholders; puedes reemplazarlos por imágenes reales)
+var list = document.getElementById('nannies');
 
-  // --- Toast lindo ---
-  function showToast(msg='🌷 ¡Lo estás haciendo bien, mamá! Registro guardado.'){
-    const t = document.getElementById('toast');
-    t.firstElementChild.textContent = msg;
-    t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(-20px)'; t.style.transition = 'none'; void t.offsetWidth;
-    t.style.transition = 'opacity .18s ease, transform .18s ease';
-    t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
-    setTimeout(()=>{ t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(-20px)'; }, 1800);
-  }
+function renderList(items){
+  list.innerHTML = '';
+  items.forEach(function(n){
+    var row = document.createElement('div');
+    row.className = 'row';
+    row.style.gap = '10px';
 
-  function agregarLog(){
-    const tipo  = document.getElementById('logTipo').value;
-    const nota  = document.getElementById('logNota').value.trim();
-    const animo = parseInt(document.getElementById('logAnimo').value||'0',10) || null;
-    const date  = (logFecha.value || todayStr());
+    var img = document.createElement('img');
+    img.className = 'nimg';
+    img.alt = n.nombre;
+    img.src = n.foto;
 
-    if(!nota && !animo){ showToast('💡 Escribe una nota o registra tu ánimo (1–5).'); return; }
+    var card = document.createElement('div');
+    card.className = 'card';
+    card.style.flex = '1';
 
-    state.registros.push({date, tipo, nota, animo});
-    localStorage.setItem('cm360.logs', JSON.stringify(state.registros));
+    var header = document.createElement('div');
+    header.className = 'row';
+    header.style.justifyContent = 'space-between';
 
-    // limpiar campos (mantener fecha)
-    document.getElementById('logTipo').selectedIndex = 0;
-    document.getElementById('logAnimo').value = '';
-    document.getElementById('logNota').value = '';
+    var left = document.createElement('div');
+    left.appendChild(document.createTextNode(n.nombre+' '));
+    var b1=document.createElement('span'); b1.className='badge'; b1.textContent=n.distrito; left.appendChild(b1);
+    var b2=document.createElement('span'); b2.className='badge'; b2.style.marginLeft='6px'; b2.textContent=n.modalViv; left.appendChild(b2);
 
-    dibujarCalendario(); mostrarDia(new Date(date)); renderStats();
-    showToast('🌷 ¡Lo estás haciendo bien, mamá! Registro guardado.');
-  }
+    var rate = document.createElement('div');
+    rate.className = 'pill';
+    rate.textContent = '★ ' + n.rating;
 
-  function regsByDateStr(ymd){ return state.registros.filter(r=>r.date===ymd); }
-  function weekStats(){
-    const d=new Date(); const day=(d.getDay()+6)%7; const start=new Date(d.getFullYear(),d.getMonth(),d.getDate()-day); const end=new Date(start); end.setDate(start.getDate()+7);
-    const list = state.registros.filter(r=>{const t=new Date(r.date); return t>=start && t<end;});
-    const hoy = state.registros.filter(r=>r.date===todayStr());
-    const animos = list.map(r=>r.animo).filter(Boolean);
-    return {hoy:hoy.length, semana:list.length, prom: animos.length? (animos.reduce((a,b)=>a+b,0)/animos.length): null};
-  }
-  function renderStats(){
-    const {hoy, semana, prom} = weekStats();
-    document.getElementById('statHoy').textContent=hoy;
-    document.getElementById('statSemana').textContent=semana;
-    document.getElementById('statAnimo').textContent = (prom==null?'—':prom.toFixed(1));
-    document.getElementById('barHoy').style.width = Math.min(hoy*20,100)+'%';
-    document.getElementById('barSem').style.width = Math.min(semana*12,100)+'%';
-    document.getElementById('barAni').style.width = (prom? prom*20:0)+'%';
-  }
+    header.appendChild(left);
+    header.appendChild(rate);
 
-  /* ========= Calendario inline ========= */
-  let calMes, calAno;
-  function initCalendarioToToday(){ const t=new Date(); calMes=t.getMonth(); calAno=t.getFullYear(); logFecha.value=todayStr(t); dibujarCalendario(); mostrarDia(t); }
-  function cambiarMes(delta){ calMes += delta; if(calMes<0){calMes=11; calAno--;} if(calMes>11){calMes=0; calAno++;} dibujarCalendario(); document.getElementById('calDetalle').innerHTML=''; }
-  function dibujarCalendario(){
-    const grid=document.getElementById('calGrid'); const titulo=document.getElementById('calTitulo');
-    const first=new Date(calAno,calMes,1); const startDay=(first.getDay()+6)%7; const days=new Date(calAno,calMes+1,0).getDate();
-    titulo.textContent=new Date(calAno,calMes).toLocaleDateString('es-PE',{month:'long',year:'numeric'});
-    grid.innerHTML='';
-    ['L','M','M','J','V','S','D'].forEach(d=>{const h=document.createElement('div'); h.className='muted'; h.style.textAlign='center'; h.textContent=d; grid.appendChild(h);});
-    for(let i=0;i<startDay;i++){ const emp=document.createElement('div'); emp.className='day'; emp.style.visibility='hidden'; grid.appendChild(emp); }
-    for(let d=1; d<=days; d++){
-      const cell=document.createElement('div'); cell.className='day'; const fecha=new Date(calAno,calMes,d);
-      const ymd=todayStr(fecha);
-      cell.innerHTML=`<div style="font-weight:700">${d}</div>`;
-      if(regsByDateStr(ymd).length){ const dot=document.createElement('div'); dot.className='dot'; cell.appendChild(dot); }
-      cell.addEventListener('click',()=>{ logFecha.value=ymd; mostrarDia(fecha); });
-      grid.appendChild(cell);
-    }
-  }
-  function mostrarDia(fecha){
-    const ymd=todayStr(fecha);
-    const det=document.getElementById('calDetalle'); det.innerHTML=`<h4 style="margin:6px 0">Registros de ${fecha.toLocaleDateString()}</h4>`;
-    const list=regsByDateStr(ymd);
-    if(!list.length){ det.innerHTML += '<div class="empty">Sin registros este día.</div>'; return; }
-    list.forEach(r=>{ const el=document.createElement('div'); el.className='pill'; el.textContent=`${r.tipo}${r.animo?` (${r.animo}/5)`:''} — ${r.nota||''}`; det.appendChild(el); });
-  }
-
-  /* ========= Chat demo ========= */
-  const chat = document.getElementById('chat');
-  function addBubble(role, text){ const b=document.createElement('div'); b.className='bubble '+(role==='me'?'me':'bot'); b.textContent=text; chat.appendChild(b); chat.scrollTop=chat.scrollHeight; }
-  function respond(q){ const t=q.toLowerCase(); let ans="Puedo ayudarte con lactancia, sueño y rutinas. ¿Sobre qué quieres aprender?"; if(t.includes('lact')) ans="Lactancia: tomas cada 2–3h suelen funcionar en RN. Observa señales tempranas."; if(t.includes('sueñ')||t.includes('siest')) ans="Sueño: ventana de vigilia 45–60 min y ambiente oscuro + ruido blanco."; if(t.includes('rutina')) ans="Rutina: 2–3 anclas (baño, canción, arrullo) ayudan a anticipar."; addBubble('bot', ans); }
-  function send(){ const inp=document.getElementById('inp'); const q=inp.value.trim(); if(!q) return; addBubble('me', q); inp.value=''; setTimeout(()=>respond(q), 450); }
-  function quickAsk(topic){ const map={lactancia:'¿Cada cuánto debo dar de lactar?', sueño:'¿Cómo mejoro sus siestas?', rutina:'¿Qué rutina diaria es recomendable?'}; document.getElementById('inp').value=map[topic]||''; send(); }
-
-  /* ========= Nawi (buscar niñeras) ========= */
-  const data = [
-    {id:1, nombre:'María López', zona:'Lima Este', exp:'RN/0–3m', rating:4.8},
-    {id:2, nombre:'Rosa Pérez', zona:'Lima Norte', exp:'3–6m', rating:4.6},
-    {id:3, nombre:'Karla Díaz', zona:'Lima Sur', exp:'Gemelos', rating:4.7},
-    {id:4, nombre:'Elena Cruz', zona:'Lima Centro', exp:'RN/0–3m', rating:4.9},
-  ];
-  const list = document.getElementById('nannies');
-  function renderList(items){
-    list.innerHTML='';
-    items.forEach(n=>{
-      const li=document.createElement('div'); li.className='row'; li.style.gap='10px';
-      li.innerHTML = `
-        <div class="avatar" aria-hidden="true"></div>
-        <div class="card" style="flex:1">
-          <div class="row" style="justify-content:space-between">
-            <div><strong>${n.nombre}</strong> <span class="badge">${n.zona}</span> <span class="badge">${n.exp}</span></div>
-            <div class="pill">★ ${n.rating}</div>
-          </div>
-          <div class="row" style="margin-top:8px">
-            <button class="btn" onclick="alert('Ver perfil demo')">Ver</button>
-            <button class="btn brand" onclick="contactar()">WhatsApp</button>
-          </div>
-        </div>`;
-      list.appendChild(li);
+    var modos = document.createElement('div');
+    modos.className = 'row';
+    modos.style.marginTop = '6px';
+    modos.style.flexWrap = 'wrap';
+    n.modos.forEach(function(m){
+      var s=document.createElement('span'); s.className='pill'; s.textContent=m; modos.appendChild(s);
     });
-  }
-  function filtrar(){ const z=(document.getElementById('f_zona').value||'').toLowerCase(); const e=document.getElementById('f_exp').value; renderList(data.filter(n => (!z || n.zona.toLowerCase().includes(z)) && (!e || n.exp===e))); }
-  function contactar(){ alert('Abriría WhatsApp con el contacto de la nana (demo)'); }
-  renderList(data);
 
-  /* ========= Tribu (agenda) ========= */
-  const agenda = [
-    {id:1, titulo:'Charla: Sueño del RN', fecha:'2025-11-05', hora:'19:00', modo:'Virtual (Zoom)', tema:'Higiene del sueño 0–3m', expositora:'Lic. Ana Corrales'},
-    {id:2, titulo:'Taller: Lactancia sin dolor', fecha:'2025-11-08', hora:'10:00', modo:'Presencial (Miraflores)', tema:'Agarre y posturas', expositora:'Dra. María Paredes'},
-    {id:3, titulo:'Conversatorio: Retorno al trabajo', fecha:'2025-11-12', hora:'19:30', modo:'Virtual (Meet)', tema:'Red de apoyo y emociones', expositora:'Psic. Laura Ríos'},
-  ];
-  function renderAgenda(){
-    const wrap = document.getElementById('agenda'); wrap.innerHTML='';
-    agenda.forEach(a=>{
-      const card=document.createElement('div'); card.className='card';
-      card.innerHTML = `
-        <div class="row" style="justify-content:space-between">
-          <h4 style="margin:0">${a.titulo}</h4>
-          <span class="badge">${a.modo}</span>
-        </div>
-        <div class="row"><span class="pill">🗓 ${new Date(a.fecha).toLocaleDateString()}</span><span class="pill">⏰ ${a.hora}</span></div>
-        <div class="pill">🎯 ${a.tema}</div>
-        <div class="muted" style="font-size:13px">👩‍🏫 ${a.expositora}</div>
-        <div class="row" style="margin-top:8px"><button class="btn brand" onclick="alert('Inscrita en: ${a.titulo}')">Inscribirme</button></div>
-      `;
-      wrap.appendChild(card);
+    var ver = document.createElement('div');
+    ver.className = 'row';
+    ver.style.marginTop = '6px';
+    ver.style.flexWrap = 'wrap';
+    n.ver.forEach(function(v){
+      var s=document.createElement('span'); s.className='pill'; s.textContent='✅ '+v; ver.appendChild(s);
     });
-  }
+
+    var actions = document.createElement('div');
+    actions.className = 'row';
+    actions.style.marginTop = '8px';
+
+    var btnVer = document.createElement('button');
+    btnVer.className = 'btn';
+    btnVer.textContent = 'Ver';
+    btnVer.addEventListener('click', function(){ alert('Ver perfil (demo)'); });
+
+    var btnWa = document.createElement('button');
+    btnWa.className = 'btn brand';
+    btnWa.textContent = 'WhatsApp';
+    btnWa.addEventListener('click', function(){ alert('Abriría WhatsApp (demo)'); });
+
+    actions.appendChild(btnVer);
+    actions.appendChild(btnWa);
+
+    card.appendChild(header);
+    card.appendChild(modos);
+    card.appendChild(ver);
+    card.appendChild(actions);
+
+    row.appendChild(img);
+    row.appendChild(card);
+
+    list.appendChild(row);
+  });
+}
+function filtrarNawi(){
+  var z = document.getElementById('f_zona').value;
+  var m = document.getElementById('f_modal').value;
+  var out = dataNannies.filter(function(n){
+    var okZ = !z || n.distrito===z;
+    var okM = !m || n.modalViv===m;
+    return okZ && okM;
+  });
+  renderList(out);
+}
+document.getElementById('btnBuscarNawi').addEventListener('click', filtrarNawi);
+renderList(dataNannies);
+
+/* ===== Tribu (agenda) ===== */
+var agenda = [
+  {id:1, titulo:'Charla: Sueño del RN', fecha:'2025-11-05', hora:'19:00', modo:'Virtual (Zoom)', tema:'Higiene del sueño 0–3m', expositora:'Lic. Ana Corrales'},
+  {id:2, titulo:'Taller: Lactancia sin dolor', fecha:'2025-11-08', hora:'10:00', modo:'Presencial (Miraflores)', tema:'Agarre y posturas', expositora:'Dra. María Paredes'},
+  {id:3, titulo:'Conversatorio: Retorno al trabajo', fecha:'2025-11-12', hora:'19:30', modo:'Virtual (Meet)', tema:'Red de apoyo y emociones', expositora:'Psic. Laura Ríos'}
+];
+
+function renderAgenda(){
+  var wrap = document.getElementById('agenda'); wrap.innerHTML='';
+  agenda.forEach(function(a){
+    var card=document.createElement('div'); card.className='card';
+
+    var header=document.createElement('div'); header.className='row'; header.style.justifyContent='space-between';
+    var h4=document.createElement('h4'); h4.style.margin='0'; h4.textContent=a.titulo;
+    var badge=document.createElement('span'); badge.className='badge'; badge.textContent=a.modo;
+    header.appendChild(h4); header.appendChild(badge);
+
+    var row=document.createElement('div'); row.className='row';
+    var s1=document.createElement('span'); s1.className='pill'; s1.textContent='🗓 '+new Date(a.fecha).toLocaleDateString();
+    var s2=document.createElement('span'); s2.className='pill'; s2.textContent='⏰ '+a.hora;
+    row.appendChild(s1); row.appendChild(s2);
+
+    var tema=document.createElement('div'); tema.className='pill'; tema.textContent='🎯 '+a.tema;
+    var expo=document.createElement('div'); expo.className='muted'; expo.style.fontSize='13px'; expo.textContent='👩‍🏫 '+a.expositora;
+
+    var actions=document.createElement('div'); actions.className='row'; actions.style.marginTop='8px';
+    var btn=document.createElement('button'); btn.className='btn brand'; btn.textContent='Inscribirme';
+    btn.addEventListener('click', function(){ alert('Inscrita en: '+a.titulo); });
+    actions.appendChild(btn);
+
+    card.appendChild(header); card.appendChild(row); card.appendChild(tema); card.appendChild(expo); card.appendChild(actions);
+    wrap.appendChild(card);
+  });
+}
+renderAgenda();
+
+/* ===== Modal reuniones ===== */
+var bk=document.getElementById('bk');
+document.getElementById('btnNuevaReunion').addEventListener('click', function(){
+  bk.style.display='flex';
+  document.getElementById('m_fecha').value = todayStr();
+});
+document.getElementById('btnCerrarModal').addEventListener('click', function(){ bk.style.display='none'; });
+document.getElementById('btnCrearReunion').addEventListener('click', function(){
+  var tema=document.getElementById('m_tema').value.trim()||'Charla entre mamás';
+  var fecha=document.getElementById('m_fecha').value||todayStr();
+  var hora=document.getElementById('m_hora').value||'19:00';
+  var link=document.getElementById('m_link').value.trim()||'https://zoom.us (demo)';
+  agenda.push({id:Date.now(), titulo:tema, fecha:fecha, hora:hora, modo:'Virtual (Zoom)', tema:'Compartir experiencias', expositora:'Comunidad'});
   renderAgenda();
+  bk.style.display='none';
+  showToast('Reunión creada: '+link);
+});
 
-  /* ========= Init ========= */
-  function renderTodo(){ refrescarPerfil(); renderStats(); dibujarCalendario(); }
-  document.getElementById('logFecha').value = todayStr();
+/* ===== Init ===== */
+function renderTodo(){ refrescarPerfil(); renderStats(); dibujarCalendario(); }
+initCalendarioToToday();
+document.getElementById('logFecha').value = todayStr();
 </script>
 </body>
 </html>
