@@ -38,9 +38,9 @@
   .grid.cols2{grid-template-columns:1fr 1fr}
   .grid.cols3{grid-template-columns:1fr 1fr 1fr}
   .pill{background:var(--chip); border:1px solid var(--line); padding:8px 12px; border-radius:999px; font-size:13px}
-  .badge{font-size:11px; padding:4px 8px; border-radius:999px; background:#fff; border:1px solid var(--line); color:var(--accent)}
+  .badge{font-size:11px; padding:4px 8px; border-radius:999px; background:#fff; border:1px solid var(--line); color:#9d174d}
   .muted{color:var(--muted)}
-  .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 14px; border-radius:14px; border:1px solid var(--line); background:#fff; color:var(--text); cursor:pointer; font-weight:700}
+  .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 14px; border-radius:14px; border:1px solid var(--line); background:#fff; color:#fff; cursor:pointer; font-weight:700; color:var(--text)}
   .btn.brand{background:linear-gradient(180deg, var(--brand), var(--brand-2)); color:#fff; border:none}
   .btn.ghost{background:transparent}
   .field{display:flex; flex-direction:column; gap:6px}
@@ -80,12 +80,30 @@
   /* Toggle de pestañas del acceso */
   .tabbtn{transition:.15s ease}
   .tabbtn.active{background:linear-gradient(180deg, var(--brand), var(--brand-2)); color:#fff; border:none}
-  .tabbtn:not(.active){background:#fff; color:var(--text); border:1px solid var(--line)}
+  .tabbtn:not(.active){
+    background:#fff;
+    color:var(--text);
+    border:1px solid var(--line);
+  }
 
   /* MODAL */
   .modal-backdrop{position:fixed; inset:0; background:#0006; display:none; align-items:center; justify-content:center; z-index:50}
   .modal{width:min(480px,92%); background:#fff; border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); padding:16px}
   .modal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
+
+  /* Foro */
+  .post{border:1px solid var(--line); border-radius:14px; padding:12px; background:#fff}
+  .post-head{display:flex; justify-content:space-between; align-items:center; gap:8px}
+  .post-author{font-weight:700}
+  .post-time{font-size:12px; color:#6b7280}
+  .post-body{white-space:pre-wrap; margin:6px 0 8px}
+  .post-actions{display:flex; gap:8px; flex-wrap:wrap}
+  .post-actions .btn{padding:8px 10px; border-radius:10px}
+  .comment{border-top:1px dashed var(--line); padding-top:8px; margin-top:8px}
+  .comment .meta{font-size:12px; color:#6b7280}
+  .comment .text{white-space:pre-wrap; margin-top:4px}
+  .comment-add{display:flex; gap:8px; margin-top:8px}
+  .comment-add input{flex:1}
 </style>
 </head>
 <body>
@@ -253,7 +271,7 @@
       </div>
     </section>
 
-    <!-- PERFIL (mamá usuaria) -->
+    <!-- PERFIL -->
     <section class="screen" id="perfil">
       <div class="card stack">
         <div class="row" style="gap:12px">
@@ -283,7 +301,7 @@
       </div>
     </section>
 
-    <!-- TRIBU (Agenda + reuniones) -->
+    <!-- TRIBU (Agenda + Foro) -->
     <section class="screen" id="tribu">
       <div class="card stack">
         <div class="row" style="justify-content:space-between">
@@ -292,6 +310,23 @@
         </div>
         <div id="agenda" class="stack"></div>
       </div>
+
+      <!-- Foro dentro de Tribu -->
+      <div class="card stack" style="margin-top:8px">
+        <div class="row" style="justify-content:space-between">
+          <h3 style="margin:0">Foro de la Tribu 📣</h3>
+          <span class="badge" id="foroUserTribu">—</span>
+        </div>
+        <div class="field">
+          <label>Comparte algo con la comunidad</label>
+          <textarea id="postTextTribu" rows="3" placeholder="Escribe tu mensaje..."></textarea>
+        </div>
+        <div class="row" style="justify-content:flex-end">
+          <button class="btn brand" id="btnPublicarTribu">Publicar</button>
+        </div>
+      </div>
+      <div id="postsTribu" class="stack"></div>
+      <div class="empty" id="postsEmptyTribu" style="display:none">Aún no hay publicaciones. ¡Sé la primera en escribir! ✨</div>
     </section>
 
     <!-- MODAL REUNIÓN -->
@@ -397,6 +432,7 @@ document.getElementById('btnLogin').addEventListener('click', function(){
   state.usuario = {nombre:'Mamá', contacto:u};
   if(!state.perfil){ state.perfil = {edad:2, primer:'Sí', apoyoNivel:'Medio', apoyos:['Pareja'], whatsapp:true, hijos:[]}; }
   refrescarPerfil(); initCalendarioToToday(); goto('yo'); renderTodo();
+  renderForo();
 });
 
 document.getElementById('btnRegistrar').addEventListener('click', function(){
@@ -415,12 +451,15 @@ document.getElementById('btnRegistrar').addEventListener('click', function(){
   state.usuario = {nombre:nombre, contacto:contacto};
   state.perfil = {edad:edad, primer:primer, apoyoNivel:apoyoNivel, apoyos:apoyosSel, whatsapp:whatsapp, hijos:hijos};
   refrescarPerfil(); initCalendarioToToday(); goto('yo'); renderTodo();
+  renderForo();
 });
 
 document.getElementById('btnLogout').addEventListener('click', function(){
   localStorage.removeItem('cm360.logs');
   state.usuario=null; state.perfil=null; state.registros=[];
   tabbar.style.display='none'; goto('acceso');
+  var fu = document.getElementById('foroUserTribu');
+  if (fu) fu.textContent='—';
 });
 
 /* ===== Perfil ===== */
@@ -445,10 +484,13 @@ function refrescarPerfil(){
   var primerx = (state.perfil && /No/i.test(state.perfil.primer||'')) ? 'no primerx' : 'primerx';
   var apoyo = (state.perfil ? (state.perfil.apoyoNivel||'Medio') : 'Medio').toLowerCase();
   document.getElementById('segmento').textContent = etapa + ' | ' + primerx + ' | apoyo ' + apoyo;
+
+  var fu = document.getElementById('foroUserTribu');
+  if (fu) fu.textContent = (state.usuario && state.usuario.nombre) ? state.usuario.nombre : '—';
 }
 document.getElementById('btnEditarNombre').addEventListener('click', function(){
   var nuevo = prompt('Nuevo nombre:', state.usuario ? state.usuario.nombre : '');
-  if(nuevo){ state.usuario.nombre = nuevo; refrescarPerfil(); }
+  if(nuevo){ state.usuario.nombre = nuevo; refrescarPerfil(); renderForo(); }
 });
 document.getElementById('btnEditarHijos').addEventListener('click', function(){
   var actual = (state.perfil && state.perfil.hijos) ? state.perfil.hijos.join(', ') : '';
@@ -583,12 +625,19 @@ document.getElementById('chipRutina').addEventListener('click', function(){ docu
 
 /* ===== Nawi (con fotos) ===== */
 var dataNannies = [
-  {id:1, nombre:'María López', distrito:'Lima Este', modalViv:'Cama adentro', rating:4.8, modos:['Por horas','Día','Permanente'], ver:['DNI verificado','Antecedentes'], foto:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...'},
-  {id:2, nombre:'Rosa Pérez', distrito:'Miraflores', modalViv:'Cama afuera', rating:4.6, modos:['Permanente','Nana SOS'], ver:['Entrevista','Referencia'], foto:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...'},
-  {id:3, nombre:'Karla Díaz', distrito:'Lima Sur', modalViv:'Cama adentro', rating:4.7, modos:['Por horas','Nana SOS'], ver:['DNI verificado'], foto:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...'},
-  {id:4, nombre:'Elena Cruz', distrito:'San Isidro', modalViv:'Cama afuera', rating:4.9, modos:['Día','Permanente','Nana SOS'], ver:['Referencia','Antecedentes'], foto:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...'}
+  {id:1, nombre:'María López', distrito:'Lima Este', modalViv:'Cama adentro', rating:4.8,
+   modos:['Por horas','Día','Permanente'], ver:['DNI verificado','Antecedentes'],
+   foto:'assets/nannies/maria.jpg.jpeg'},
+  {id:2, nombre:'Rosa Pérez', distrito:'Miraflores', modalViv:'Cama afuera', rating:4.6,
+   modos:['Permanente','Nana SOS'], ver:['Entrevista','Referencia'],
+   foto:'assets/nannies/rosa.jpg.jpg'},
+  {id:3, nombre:'Karla Díaz', distrito:'Lima Sur', modalViv:'Cama adentro', rating:4.7,
+   modos:['Por horas','Nana SOS'], ver:['DNI verificado'],
+   foto:'assets/nannies/karla.jpg.jpg'},
+  {id:4, nombre:'Elena Cruz', distrito:'San Isidro', modalViv:'Cama afuera', rating:4.9,
+   modos:['Día','Permanente','Nana SOS'], ver:['Referencia','Antecedentes'],
+   foto:'assets/nannies/elena.jpg.jpeg'}
 ];
-// (los base64 son placeholders; puedes reemplazarlos por imágenes reales)
 var list = document.getElementById('nannies');
 
 function renderList(items){
@@ -734,10 +783,124 @@ document.getElementById('btnCrearReunion').addEventListener('click', function(){
   showToast('Reunión creada: '+link);
 });
 
+/* ===== Foro dentro de Tribu ===== */
+var foroKey = 'cm360.foros';
+var foro = JSON.parse(localStorage.getItem(foroKey) || '[]'); // [{id, author, text, ts, likes, comments:[]}]
+var postsWrap = document.getElementById('postsTribu');
+var postsEmpty = document.getElementById('postsEmptyTribu');
+
+function saveForo(){ localStorage.setItem(foroKey, JSON.stringify(foro)); }
+function fmtTime(ts){
+  var d=new Date(ts);
+  return d.toLocaleDateString()+' '+d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function renderForo(){
+  var badge = document.getElementById('foroUserTribu');
+  if (badge) badge.textContent = (state.usuario && state.usuario.nombre) ? state.usuario.nombre : '—';
+
+  postsWrap.innerHTML='';
+  if(!foro.length){
+    postsEmpty.style.display='block';
+    return;
+  }
+  postsEmpty.style.display='none';
+
+  var data=[].concat(foro).sort(function(a,b){ return b.ts - a.ts; });
+  data.forEach(function(p){
+    var card=document.createElement('div'); card.className='post';
+
+    var head=document.createElement('div'); head.className='post-head';
+    var left=document.createElement('div');
+    var author=document.createElement('div'); author.className='post-author'; author.textContent=p.author||'Mamá';
+    var time=document.createElement('div'); time.className='post-time'; time.textContent=fmtTime(p.ts);
+    left.appendChild(author); left.appendChild(time);
+
+    var right=document.createElement('div'); right.className='row';
+    var likeBtn=document.createElement('button'); likeBtn.className='btn'; likeBtn.textContent='❤️ '+(p.likes||0);
+    likeBtn.setAttribute('data-action','like'); likeBtn.setAttribute('data-id', p.id);
+    right.appendChild(likeBtn);
+
+    if(state.usuario && state.usuario.nombre===p.author){
+      var delBtn=document.createElement('button'); delBtn.className='btn'; delBtn.textContent='🗑️';
+      delBtn.setAttribute('data-action','del'); delBtn.setAttribute('data-id', p.id);
+      right.appendChild(delBtn);
+    }
+
+    head.appendChild(left); head.appendChild(right);
+
+    var body=document.createElement('div'); body.className='post-body'; body.textContent=p.text;
+
+    var comments=document.createElement('div');
+    (p.comments||[]).forEach(function(c){
+      var item=document.createElement('div'); item.className='comment';
+      var meta=document.createElement('div'); meta.className='meta'; meta.textContent=c.author+' • '+fmtTime(c.ts);
+      var text=document.createElement('div'); text.className='text'; text.textContent=c.text;
+      item.appendChild(meta); item.appendChild(text);
+      comments.appendChild(item);
+    });
+
+    var addRow=document.createElement('div'); addRow.className='comment-add';
+    var inp=document.createElement('input'); inp.placeholder='Escribe un comentario…'; inp.setAttribute('data-id', p.id);
+    var send=document.createElement('button'); send.className='btn'; send.textContent='Comentar';
+    send.setAttribute('data-action','comment'); send.setAttribute('data-id', p.id);
+    addRow.appendChild(inp); addRow.appendChild(send);
+
+    card.appendChild(head);
+    card.appendChild(body);
+    if((p.comments||[]).length){ card.appendChild(comments); }
+    card.appendChild(addRow);
+
+    postsWrap.appendChild(card);
+  });
+}
+
+document.getElementById('btnPublicarTribu').addEventListener('click', function(){
+  var ta=document.getElementById('postTextTribu');
+  var txt=(ta.value||'').trim();
+  if(!txt){ showToast('Escribe algo antes de publicar.'); return; }
+  if(!state.usuario){ showToast('Inicia sesión para publicar.'); return; }
+  var post={ id: Date.now().toString(36)+Math.random().toString(36).slice(2,7),
+             author: state.usuario.nombre || 'Mamá',
+             text: txt,
+             ts: Date.now(),
+             likes: 0,
+             comments: [] };
+  foro.push(post); saveForo(); ta.value=''; renderForo();
+});
+
+postsWrap.addEventListener('click', function(e){
+  var btn=e.target.closest('button'); if(!btn) return;
+  var id=btn.getAttribute('data-id'); var action=btn.getAttribute('data-action');
+  if(!id || !action) return;
+
+  var idx=foro.findIndex(function(p){return p.id===id;});
+  if(idx<0) return;
+
+  if(action==='like'){
+    foro[idx].likes=(foro[idx].likes||0)+1; saveForo(); renderForo(); return;
+  }
+  if(action==='del'){
+    if(!state.usuario || state.usuario.nombre!==foro[idx].author){ showToast('Solo la autora puede borrar.'); return; }
+    foro.splice(idx,1); saveForo(); renderForo(); return;
+  }
+  if(action==='comment'){
+    if(!state.usuario){ showToast('Inicia sesión para comentar.'); return; }
+    var input = postsWrap.querySelector('input[data-id="'+id+'"]');
+    var text=(input && input.value || '').trim();
+    if(!text){ showToast('Escribe tu comentario.'); return; }
+    foro[idx].comments = foro[idx].comments || [];
+    foro[idx].comments.push({ author: state.usuario.nombre || 'Mamá', text:text, ts: Date.now() });
+    saveForo(); renderForo();
+  }
+});
+
 /* ===== Init ===== */
 function renderTodo(){ refrescarPerfil(); renderStats(); dibujarCalendario(); }
 initCalendarioToToday();
 document.getElementById('logFecha').value = todayStr();
+
+renderForo();
 </script>
 </body>
 </html>
